@@ -183,13 +183,28 @@
       align-items: center;
       gap: 7px;
       background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.16);
       border-radius: var(--radius-full);
-      padding: 6px 14px;
-      font-size: 0.82rem;
+      padding: 7px 15px;
+      font-size: 0.83rem;
       font-weight: 600;
+      color: #ffffff;
       backdrop-filter: blur(8px);
-      transition: background 0.2s;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    .stat-pill:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .stat-pill:active {
+      transform: scale(0.95);
     }
 
     .stat-pill strong {
@@ -197,6 +212,28 @@
     }
     .stat-pill.pill-saude strong {
       color: #f87171;
+    }
+    .stat-pill.pill-total strong {
+      color: #e2e8f0;
+    }
+
+    /* Estados Ativos com feedback visual e glow */
+    .stat-pill.active {
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 14px rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-pill.pill-saude.active {
+      background: rgba(239, 68, 68, 0.28);
+      border-color: rgba(248, 113, 113, 0.65);
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
+    }
+
+    .stat-pill.pill-edu.active {
+      background: rgba(2, 132, 199, 0.28);
+      border-color: rgba(56, 189, 248, 0.65);
+      box-shadow: 0 0 14px rgba(2, 132, 199, 0.35);
     }
 
     /* ─────────────────────────────────────────────
@@ -1201,10 +1238,16 @@
     <div class="header-badge">🏛️ Prefeitura de Peruíbe · SP</div>
     <h1 class="header-title">Equipamentos Públicos</h1>
     <p class="header-desc">Consulte a localização, telefones e rotas no Google Maps de unidades de saúde e escolas municipais.</p>
-    <div class="header-stats-row">
-      <div class="stat-pill pill-saude">🏥 Saúde: <strong id="header-saude-count">38</strong></div>
-      <div class="stat-pill pill-edu">🏫 Educação: <strong id="header-edu-count">41</strong></div>
-      <div class="stat-pill">📋 Total: <strong id="header-total-count">79</strong></div>
+    <div class="header-stats-row" role="tablist" aria-label="Filtrar por categoria no cabeçalho">
+      <button class="stat-pill pill-saude" id="hpill-saude" onclick="selectHeaderCategory('saude')" role="tab" aria-selected="false" aria-label="Filtrar por Saúde">
+        <span>🏥</span> Saúde: <strong id="header-saude-count">38</strong>
+      </button>
+      <button class="stat-pill pill-edu" id="hpill-edu" onclick="selectHeaderCategory('educacao')" role="tab" aria-selected="false" aria-label="Filtrar por Educação">
+        <span>🏫</span> Educação: <strong id="header-edu-count">41</strong>
+      </button>
+      <button class="stat-pill pill-total active" id="hpill-all" onclick="selectHeaderCategory('todos')" role="tab" aria-selected="true" aria-label="Ver todos os equipamentos">
+        <span>📋</span> Total: <strong id="header-total-count">79</strong>
+      </button>
     </div>
   </div>
 </header>
@@ -1571,6 +1614,16 @@ function getFilteredItems() {
   return items;
 }
 
+/* ── CLIQUE NAS PÍLULAS DO CABEÇALHO ───────────────── */
+function selectHeaderCategory(cat) {
+  setTab(cat);
+  // Rolar suavemente para a barra de busca no mobile se necessário
+  const searchEl = $('search');
+  if (searchEl && window.scrollY < 120) {
+    searchEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
 /* ── TROCA DE TAB ─────────────────────────────────── */
 function setTab(tab) {
   activeTab = tab;
@@ -1605,215 +1658,14 @@ function setTab(tab) {
     }
   });
 
-  buildQuickFilters();
-  render();
-}
-
-/* ── SEARCH ACTIONS ───────────────────────────────── */
-function onSearch() {
-  searchQuery = $('search').value.toLowerCase().trim();
-  render();
-}
-
-function clearSearch() {
-  $('search').value = '';
-  searchQuery = '';
-  render();
-  $('search').focus();
-}
-
-function clearAllFilters() {
-  activeFilter = null;
-  searchQuery = '';
-  $('search').value = '';
-  buildQuickFilters();
-  render();
-}
-
-/* ── CENTRALIZAÇÃO DOS QUICKFILTERS ─────────────────── */
-function centerChip(chip) {
-  if (!chip) return;
-  const wrap = $('filter-chips');
-  if (!wrap) return;
-
-  const chipRect = chip.getBoundingClientRect();
-  const wrapRect = wrap.getBoundingClientRect();
-  const currentScroll = wrap.scrollLeft;
-  const targetScroll = currentScroll + (chipRect.left - wrapRect.left) - (wrapRect.width / 2) + (chipRect.width / 2);
-
-  wrap.scrollTo({
-    left: Math.max(0, targetScroll),
-    behavior: 'smooth'
-  });
-}
-
-/* ── GEOLOCALIZAÇÃO & HAVERSINE (Perto de Mim) ─────── */
-function haversineDistanceKm(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Raio da Terra em km
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
-
-function formatDistance(distKm) {
-  if (distKm === undefined || distKm === null) return '';
-  if (distKm < 1) {
-    return `${Math.round(distKm * 1000)} m`;
-  }
-  return `${distKm.toFixed(1).replace('.', ',')} km`;
-}
-
-function toggleNearMe() {
-  if (userLocation) {
-    disableNearMe();
-  } else {
-    enableNearMe();
-  }
-}
-
-function enableNearMe() {
-  if (!navigator.geolocation) {
-    showToast('Geolocalização não é suportada pelo seu navegador.');
-    return;
-  }
-
-  const btn = $('btn-near-me');
-  const txt = $('near-me-text');
-  btn.classList.add('loading');
-  txt.textContent = 'Obtendo GPS...';
-
-  navigator.geolocation.getCurrentPosition(
-    position => {
-      btn.classList.remove('loading');
-      btn.classList.add('active');
-      txt.textContent = 'Perto de mim';
-
-      userLocation = {
-        lat: position.coords.latitude,
-        lon: position.coords.longitude
-      };
-
-      $('radius-panel').classList.remove('hidden');
-      showToast('Localização obtida! Exibindo unidades próximas.');
-      render();
-    },
-    error => {
-      btn.classList.remove('loading');
-      txt.textContent = 'Perto de mim';
-      let msg = 'Não foi possível obter sua localização.';
-      if (error.code === error.PERMISSION_DENIED) {
-        msg = 'Permissão de localização negada. Ative o GPS para usar.';
-      }
-      showToast(msg);
-    },
-    {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 60000
-    }
-  );
-}
-
-function disableNearMe() {
-  userLocation = null;
-  const btn = $('btn-near-me');
-  btn.classList.remove('active', 'loading');
-  $('near-me-text').textContent = 'Perto de mim';
-  $('radius-panel').classList.add('hidden');
-  showToast('Modo perto de mim desativado.');
-  render();
-}
-
-function setRadius(km) {
-  selectedRadius = km;
-  // Atualizar visual dos chips de raio
-  [1, 3, 5, 10, 'all'].forEach(val => {
-    const chip = $(`rchip-${val}`);
-    if (chip) {
-      const isAct = (val === 'all' && km === null) || (val === km);
-      chip.className = `rchip ${isAct ? 'active' : ''}`.trim();
-      chip.setAttribute('aria-checked', isAct);
-    }
-  });
-
-  const label = km ? `${km} km` : 'sem limite';
-  showToast(`Raio configurado para ${label}.`);
-  render();
-}
-
-/* ── FILTRAGEM & DADOS ────────────────────────────── */
-function getFilteredItems() {
-  // 1. Filtrar categorias, tipos e busca textual
-  let items = DATA.filter(item => {
-    if (activeTab !== 'todos' && item.categoria !== activeTab) return false;
-    if (activeFilter && item.tipo !== activeFilter) return false;
-    if (searchQuery) {
-      const haystack = [item.nome, item.tipo, item.endereco, item.id].filter(Boolean).join(' ').toLowerCase();
-      if (!haystack.includes(searchQuery)) return false;
-    }
-    return true;
-  });
-
-  // 2. Se modo Perto de Mim estiver ativo, calcular distâncias e aplicar filtro de raio
-  if (userLocation) {
-    items = items.map(item => {
-      if (item.lat && item.lon) {
-        const dist = haversineDistanceKm(userLocation.lat, userLocation.lon, item.lat, item.lon);
-        return { ...item, distance: dist };
-      }
-      return { ...item, distance: Infinity };
-    });
-
-    // Filtrar por raio máximo se configurado
-    if (selectedRadius !== null) {
-      items = items.filter(item => item.distance <= selectedRadius);
-    }
-
-    // Ordenar pelo mais próximo primeiro
-    items.sort((a, b) => a.distance - b.distance);
-  } else {
-    // Ordenação padrão alfabética
-    items.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
-  }
-
-  return items;
-}
-
-/* ── TROCA DE TAB ─────────────────────────────────── */
-function setTab(tab) {
-  activeTab = tab;
-  activeFilter = null; // Reseta filtro de tipo ao mudar de categoria
-
-  // Atualizar Bottom Nav (mobile)
+  // Atualizar Pílulas Clicáveis do Cabeçalho
   ['all', 'saude', 'edu'].forEach(k => {
     const map = { all: 'todos', saude: 'saude', edu: 'educacao' };
     const isAct = map[k] === tab;
-    const btn = $(`nav-${k}`);
-    btn.className = `nav-btn ${isAct ? 'active-' + (k === 'all' ? 'todos' : k) : ''}`.trim();
-    btn.setAttribute('aria-selected', isAct);
-  });
-
-  // Atualizar Desktop Nav
-  ['all', 'saude', 'edu'].forEach(k => {
-    const map = { all: 'todos', saude: 'saude', edu: 'educacao' };
-    const isAct = map[k] === tab;
-    const btn = $(`dtab-${k}`);
-    btn.className = `dtab ${isAct ? 'active-' + (k === 'all' ? 'todos' : k) : ''}`.trim();
-    btn.setAttribute('aria-selected', isAct);
-  });
-
-  // Atualizar Seletor Rápido (Pills)
-  ['all', 'saude', 'edu'].forEach(k => {
-    const map = { all: 'todos', saude: 'saude', edu: 'educacao' };
-    const isAct = map[k] === tab;
-    const pill = $(`cat-pill-${k}`);
-    if (pill) {
-      pill.className = `cat-pill ${isAct ? 'active-' + (k === 'all' ? 'todos' : k) : ''}`.trim();
-      pill.setAttribute('aria-selected', isAct);
+    const hpill = $(`hpill-${k}`);
+    if (hpill) {
+      hpill.classList.toggle('active', isAct);
+      hpill.setAttribute('aria-selected', isAct);
     }
   });
 
