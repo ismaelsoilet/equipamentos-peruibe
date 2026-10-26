@@ -373,10 +373,20 @@
     .search-container {
       max-width: 1080px;
       margin: 0 auto;
-      padding: 12px 16px 8px;
+      padding: 10px 16px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .search-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .search-box {
+      flex: 1;
       position: relative;
       display: flex;
       align-items: center;
@@ -385,6 +395,169 @@
       border-radius: var(--radius-md);
       box-shadow: 0 1px 3px rgba(0,0,0,0.03);
       transition: all 0.2s ease;
+      min-height: 46px;
+    }
+
+    /* Botão Perto de Mim */
+    .btn-near-me {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 14px;
+      height: 46px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .btn-near-me:hover {
+      background: var(--surface-alt);
+      color: var(--text);
+      border-color: #cbd5e1;
+    }
+
+    .btn-near-me:active {
+      transform: scale(0.96);
+    }
+
+    .btn-near-me.active {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+    }
+
+    .btn-near-me.loading {
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .near-me-icon {
+      font-size: 1.1rem;
+      line-height: 1;
+      transition: transform 0.3s ease;
+    }
+    .btn-near-me.active .near-me-icon {
+      transform: scale(1.15);
+    }
+
+    /* Painel do Seletor de Raio */
+    .radius-panel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+      border: 1px solid #bfdbfe;
+      padding: 7px 12px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
+      animation: fadeInSlide 0.25s ease-out;
+    }
+
+    .radius-panel.hidden {
+      display: none;
+    }
+
+    @keyframes fadeInSlide {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .radius-label-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      white-space: nowrap;
+    }
+
+    .radius-chips-list {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      flex: 1;
+      justify-content: center;
+    }
+    .radius-chips-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .rchip {
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 700;
+      border: 1px solid #93c5fd;
+      background: #ffffff;
+      color: #1e40af;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .rchip:hover {
+      background: #dbeafe;
+    }
+
+    .rchip.active {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-close-radius {
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-full);
+      background: rgba(30, 58, 138, 0.1);
+      color: #1e3a8a;
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .btn-close-radius:hover {
+      background: rgba(30, 58, 138, 0.2);
+    }
+
+    /* Tag de Distância no Card */
+    .card-distance {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      color: #047857;
+      background: #d1fae5;
+      border: 1px solid #a7f3d0;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.2px;
     }
 
     .search-box:focus-within {
@@ -1121,23 +1294,46 @@
     </div>
   </div>
 
-  <div class="search-container" role="search">
-    <div class="search-box">
-      <span class="search-icon" aria-hidden="true">🔍</span>
-      <input
-        class="search-input"
-        id="search"
-        type="search"
-        inputmode="search"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-        spellcheck="false"
-        placeholder="Buscar por nome, bairro, rua ou sigla..."
-        aria-label="Buscar equipamentos"
-        oninput="onSearch()"
-      />
-      <button class="search-clear-btn" id="search-clear" aria-label="Limpar pesquisa" onclick="clearSearch()">✕</button>
+  <div class="search-container">
+    <div class="search-row" role="search">
+      <div class="search-box">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input
+          class="search-input"
+          id="search"
+          type="search"
+          inputmode="search"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          placeholder="Buscar por nome, bairro, rua ou sigla..."
+          aria-label="Buscar equipamentos"
+          oninput="onSearch()"
+        />
+        <button class="search-clear-btn" id="search-clear" aria-label="Limpar pesquisa" onclick="clearSearch()">✕</button>
+      </div>
+
+      <!-- Botão Perto de Mim -->
+      <button class="btn-near-me" id="btn-near-me" onclick="toggleNearMe()" aria-label="Filtrar equipamentos perto de mim">
+        <span class="near-me-icon" aria-hidden="true">🎯</span>
+        <span id="near-me-text">Perto de mim</span>
+      </button>
+    </div>
+
+    <!-- Seletor de Raio (Perto de Mim) -->
+    <div class="radius-panel hidden" id="radius-panel" role="region" aria-label="Configuração de raio perto de mim">
+      <div class="radius-label-group">
+        <span>📏</span> <span>Raio máximo:</span>
+      </div>
+      <div class="radius-chips-list" role="radiogroup" aria-label="Opções de raio de proximidade">
+        <button class="rchip" id="rchip-1" onclick="setRadius(1)" role="radio" aria-checked="false">1 km</button>
+        <button class="rchip active" id="rchip-3" onclick="setRadius(3)" role="radio" aria-checked="true">3 km</button>
+        <button class="rchip" id="rchip-5" onclick="setRadius(5)" role="radio" aria-checked="false">5 km</button>
+        <button class="rchip" id="rchip-10" onclick="setRadius(10)" role="radio" aria-checked="false">10 km</button>
+        <button class="rchip" id="rchip-all" onclick="setRadius(null)" role="radio" aria-checked="false">Sem limite</button>
+      </div>
+      <button class="btn-close-radius" onclick="disableNearMe()" title="Desativar modo perto de mim" aria-label="Desativar modo perto de mim">✕</button>
     </div>
   </div>
 
@@ -1220,6 +1416,9 @@ const getIcon = t => ICONS[t] || ICONS.default;
 let activeTab = 'todos';    // 'todos' | 'saude' | 'educacao'
 let activeFilter = null;    // tipo selecionado ou null
 let searchQuery = '';
+let userLocation = null;    // { lat, lon } ou null
+let selectedRadius = 3;     // km (1, 3, 5, 10 ou null para sem limite)
+let isLocating = false;
 
 /* ── DOM HELPERS ───────────────────────────────────── */
 const $ = id => document.getElementById(id);
@@ -1284,9 +1483,108 @@ function showToast(msg) {
   }, 2200);
 }
 
+/* ── GEOLOCALIZAÇÃO & HAVERSINE (Perto de Mim) ─────── */
+function haversineDistanceKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Raio da Terra em km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function formatDistance(distKm) {
+  if (distKm === undefined || distKm === null) return '';
+  if (distKm < 1) {
+    return `${Math.round(distKm * 1000)} m`;
+  }
+  return `${distKm.toFixed(1).replace('.', ',')} km`;
+}
+
+function toggleNearMe() {
+  if (userLocation) {
+    disableNearMe();
+  } else {
+    enableNearMe();
+  }
+}
+
+function enableNearMe() {
+  if (!navigator.geolocation) {
+    showToast('Geolocalização não é suportada pelo seu navegador.');
+    return;
+  }
+
+  const btn = $('btn-near-me');
+  const txt = $('near-me-text');
+  btn.classList.add('loading');
+  txt.textContent = 'Obtendo GPS...';
+
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      btn.classList.remove('loading');
+      btn.classList.add('active');
+      txt.textContent = 'Perto de mim';
+
+      userLocation = {
+        lat: position.coords.latitude,
+        lon: position.coords.longitude
+      };
+
+      $('radius-panel').classList.remove('hidden');
+      showToast('Localização obtida! Exibindo unidades próximas.');
+      render();
+    },
+    error => {
+      btn.classList.remove('loading');
+      txt.textContent = 'Perto de mim';
+      let msg = 'Não foi possível obter sua localização.';
+      if (error.code === error.PERMISSION_DENIED) {
+        msg = 'Permissão de localização negada. Ative o GPS para usar.';
+      }
+      showToast(msg);
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 60000
+    }
+  );
+}
+
+function disableNearMe() {
+  userLocation = null;
+  const btn = $('btn-near-me');
+  btn.classList.remove('active', 'loading');
+  $('near-me-text').textContent = 'Perto de mim';
+  $('radius-panel').classList.add('hidden');
+  showToast('Modo perto de mim desativado.');
+  render();
+}
+
+function setRadius(km) {
+  selectedRadius = km;
+  // Atualizar visual dos chips de raio
+  [1, 3, 5, 10, 'all'].forEach(val => {
+    const chip = $(`rchip-${val}`);
+    if (chip) {
+      const isAct = (val === 'all' && km === null) || (val === km);
+      chip.className = `rchip ${isAct ? 'active' : ''}`.trim();
+      chip.setAttribute('aria-checked', isAct);
+    }
+  });
+
+  const label = km ? `${km} km` : 'sem limite';
+  showToast(`Raio configurado para ${label}.`);
+  render();
+}
+
 /* ── FILTRAGEM & DADOS ────────────────────────────── */
 function getFilteredItems() {
-  return DATA.filter(item => {
+  // 1. Filtrar categorias, tipos e busca textual
+  let items = DATA.filter(item => {
     if (activeTab !== 'todos' && item.categoria !== activeTab) return false;
     if (activeFilter && item.tipo !== activeFilter) return false;
     if (searchQuery) {
@@ -1294,7 +1592,31 @@ function getFilteredItems() {
       if (!haystack.includes(searchQuery)) return false;
     }
     return true;
-  }).sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
+  });
+
+  // 2. Se modo Perto de Mim estiver ativo, calcular distâncias e aplicar filtro de raio
+  if (userLocation) {
+    items = items.map(item => {
+      if (item.lat && item.lon) {
+        const dist = haversineDistanceKm(userLocation.lat, userLocation.lon, item.lat, item.lon);
+        return { ...item, distance: dist };
+      }
+      return { ...item, distance: Infinity };
+    });
+
+    // Filtrar por raio máximo se configurado
+    if (selectedRadius !== null) {
+      items = items.filter(item => item.distance <= selectedRadius);
+    }
+
+    // Ordenar pelo mais próximo primeiro
+    items.sort((a, b) => a.distance - b.distance);
+  } else {
+    // Ordenação padrão alfabética
+    items.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
+  }
+
+  return items;
 }
 
 /* ── TROCA DE TAB ─────────────────────────────────── */
@@ -1508,10 +1830,14 @@ function render() {
 
   let filterLabel = '';
   if (activeFilter) {
-    filterLabel = ` em <strong>${escapeHtml(activeFilter)}</strong>`;
+    filterLabel += ` em <strong>${escapeHtml(activeFilter)}</strong>`;
   }
   if (searchQuery) {
     filterLabel += ` com termo "<strong>${escapeHtml(searchQuery)}</strong>"`;
+  }
+  if (userLocation) {
+    const rTxt = selectedRadius !== null ? ` a até <strong>${selectedRadius} km</strong> de você` : ' ordenados por proximidade';
+    filterLabel += rTxt;
   }
 
   $('results-count').innerHTML = `Exibindo <strong>${total}</strong> de ${DATA.length} equipamentos${filterLabel}`;
@@ -1593,7 +1919,10 @@ function render() {
         <div class="card-title-group">
           <div class="card-meta-row">
             <span class="card-badge">${escapeHtml(item.tipo || '')}</span>
-            <span class="card-id">#${escapeHtml(item.id || '')}</span>
+            <div style="display:flex;align-items:center;gap:6px">
+              ${item.distance !== undefined && item.distance !== Infinity ? `<span class="card-distance" title="Distância em linha reta">📍 ${formatDistance(item.distance)}</span>` : ''}
+              <span class="card-id">#${escapeHtml(item.id || '')}</span>
+            </div>
           </div>
           <h2 class="card-title">${escapeHtml(item.nome || 'Sem nome')}</h2>
         </div>
