@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a2744" />
+  <meta name="description" content="Lista de equipamentos públicos de Saúde e Educação do município de Peruíbe/SP com localização no Google Maps." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Equipamentos Públicos – Peruíbe/SP</title>
+
+  <style>
+    /* ─────────────────────────────────────────────
+       DESIGN TOKENS
+    ───────────────────────────────────────────── */
+    :root {
+      --red:        #e53935;
+      --red-dark:   #b71c1c;
+      --red-light:  #fdecea;
+      --red-mid:    #ffcdd2;
+
+      --blue:       #1565c0;
+      --blue-dark:  #0d47a1;
+      --blue-light: #e3f2fd;
+      --blue-mid:   #bbdefb;
+
+      --bg:         #f0f4f8;
+      --surface:    #ffffff;
+      --surface2:   #f8fafc;
+      --text:       #1a2744;
+      --text2:      #4a5568;
+      --muted:      #718096;
+      --border:     #e2e8f0;
+      --divider:    #edf2f7;
+
+      --radius-sm:  8px;
+      --radius-md:  14px;
+      --radius-lg:  20px;
+      --shadow-sm:  0 1px 4px rgba(0,0,0,0.08);
+      --shadow-md:  0 4px 16px rgba(0,0,0,0.10);
+      --shadow-lg:  0 8px 32px rgba(0,0,0,0.14);
+
+      --nav-h:      60px;   /* sticky nav height */
+      --safe-bot:   env(safe-area-inset-bottom, 0px);
+    }
+
+    /* ─────────────────────────────────────────────
+       RESET & BASE
+    ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      /* push content above bottom nav on mobile */
+      padding-bottom: calc(var(--nav-h) + var(--safe-bot) + 16px);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    input  { font-family: inherit; }
+
+    /* ─────────────────────────────────────────────
+       TOP HEADER
+    ───────────────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, #1a2744 0%, #1565c0 100%);
+      color: #fff;
+      padding: 20px 16px 18px;
+      padding-top: calc(20px + env(safe-area-inset-top, 0px));
+      text-align: center;
+    }
+    .header-title {
+      font-size: clamp(1.1rem, 4vw, 1.5rem);
+      font-weight: 800;
+      letter-spacing: -.3px;
+      line-height: 1.2;
+    }
+    .header-sub {
+      font-size: .82rem;
+      opacity: .72;
+      margin-top: 4px;
+      font-weight: 400;
+    }
+    .header-stats {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 14px;
+    }
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: .78rem;
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+    }
+
+    /* ─────────────────────────────────────────────
+       SEARCH BAR (sticky below header)
+    ───────────────────────────────────────────── */
+    .search-bar {
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      background: var(--surface);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .search-inner {
+      max-width: 700px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .search-icon-el {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      pointer-events: none;
+      color: var(--muted);
+    }
+    .search-input {
+      width: 100%;
+      padding: 12px 40px 12px 40px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      font-size: 1rem;      /* prevent iOS zoom (≥16px visually) */
+      background: var(--surface2);
+      color: var(--text);
+      outline: none;
+      transition: border-color .18s, box-shadow .18s;
+      -webkit-appearance: none;
+    }
+    .search-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(21,101,192,.15);
+      background: var(--surface);
+    }
+    .search-input::placeholder { color: var(--muted); }
+    .search-clear {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--muted);
+      color: #fff;
+      font-size: .75rem;
+      line-height: 24px;
+      text-align: center;
+      display: none;
+      cursor: pointer;
+    }
+    .search-input:not(:placeholder-shown) ~ .search-clear { display: block; }
+
+    /* ─────────────────────────────────────────────
+       FILTER CHIPS (horizontal scroll)
+    ───────────────────────────────────────────── */
+    .filters-wrap {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .filters-scroll {
+      display: flex;
+      gap: 8px;
+      padding: 10px 16px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .filters-scroll::-webkit-scrollbar { display: none; }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text2);
+      font-size: .82rem;
+      font-weight: 600;
+      white-space: nowrap;
+      scroll-snap-align: start;
+      transition: all .15s;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 36px;  /* comfortable tap target */
+    }
+    .chip:active { transform: scale(.96); }
+    .chip.chip-saude.active  { background: var(--red-light);  border-color: var(--red);  color: var(--red-dark); }
+    .chip.chip-edu.active    { background: var(--blue-light); border-color: var(--blue); color: var(--blue-dark); }
+    .chip.chip-all.active    { background: #1a2744; border-color: #1a2744; color: #fff; }
+
+    /* ─────────────────────────────────────────────
+       RESULTS INFO
+    ───────────────────────────────────────────── */
+    .results-bar {
+      max-width: 900px;
+      margin: 14px auto 0;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .results-count {
+      font-size: .82rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .clear-btn {
+      font-size: .78rem;
+      color: var(--blue);
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--blue-mid);
+      background: var(--blue-light);
+      display: none;
+    }
+    .clear-btn.visible { display: inline-block; }
+
+    /* ─────────────────────────────────────────────
+       CARD GRID
+    ───────────────────────────────────────────── */
+    .grid {
+      max-width: 900px;
+      margin: 12px auto 8px;
+      padding: 0 12px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px;
+    }
+
+    /* ─────────────────────────────────────────────
+       CARD
+    ───────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border-top: 4px solid transparent;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: box-shadow .2s, transform .2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    @media (hover: hover) {
+      .card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+      }
+    }
+    .card.cat-saude { border-top-color: var(--red); }
+    .card.cat-edu   { border-top-color: var(--blue); }
+
+    /* Card Header */
+    .card-head {
+      padding: 14px 16px 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .card-icon-box {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .cat-saude .card-icon-box { background: var(--red-mid); }
+    .cat-edu   .card-icon-box { background: var(--blue-mid); }
+
+    .card-title-wrap { flex: 1; min-width: 0; }
+    .card-name {
+      font-size: .97rem;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--text);
+      word-break: break-word;
+    }
+    .card-badge {
+      display: inline-block;
+      margin-top: 5px;
+      font-size: .68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .cat-saude .card-badge { background: var(--red-mid);  color: var(--red-dark); }
+    .cat-edu   .card-badge { background: var(--blue-mid); color: var(--blue-dark); }
+
+    /* Card Body */
+    .card-body {
+      padding: 0 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      flex: 1;
+    }
+    .info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: .87rem;
+      line-height: 1.45;
+      color: var(--text2);
+    }
+    .info-icon { flex-shrink: 0; width: 18px; text-align: center; opacity: .6; font-size: .9rem; margin-top: 1px; }
+    .info-text { word-break: break-word; }
+    .info-text a { color: var(--blue); }
+    .info-text a:active { opacity: .7; }
+
+    /* Card Footer */
+    .card-foot {
+      padding: 10px 14px 14px;
+      border-top: 1px solid var(--divider);
+    }
+    .btn-maps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 13px 16px;
+      border-radius: var(--radius-sm);
+      font-size: .93rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: .1px;
+      transition: filter .15s, transform .1s;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 48px; /* WCAG tap target */
+    }
+    .btn-maps:active { filter: brightness(.88); transform: scale(.98); }
+    .cat-saude .btn-maps { background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%); }
+    .cat-edu   .btn-maps { background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%); }
+    .btn-maps-icon { font-size: 1.1rem; }
+
+    /* ─────────────────────────────────────────────
+       BOTTOM NAV (mobile tab bar)
+    ───────────────────────────────────────────── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 200;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.10);
+      display: flex;
+      padding-bottom: var(--safe-bot);
+    }
+    .nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 10px 8px;
+      color: var(--muted);
+      font-size: .7rem;
+      font-weight: 600;
+      min-height: var(--nav-h);
+      transition: color .15s, background .15s;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+    }
+    .nav-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 16%; right: 16%;
+      height: 3px;
+      border-radius: 0 0 4px 4px;
+      background: transparent;
+      transition: background .15s;
+    }
+    .nav-btn .nav-icon { font-size: 1.4rem; line-height: 1; }
+    .nav-btn .nav-count {
+      position: absolute;
+      top: 6px; right: calc(50% - 16px);
+      background: var(--red);
+      color: #fff;
+      font-size: .6rem;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 10px;
+      min-width: 18px;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .nav-btn.active-todos {
+      color: #1a2744;
+    }
+    .nav-btn.active-todos::before { background: #1a2744; }
+
+    .nav-btn.active-saude {
+      color: var(--red);
+    }
+    .nav-btn.active-saude::before { background: var(--red); }
+    .nav-btn.active-saude .nav-count { background: var(--red); }
+
+    .nav-btn.active-edu {
+      color: var(--blue);
+    }
+    .nav-btn.active-edu::before { background: var(--blue); }
+
+    /* ─────────────────────────────────────────────
+       EMPTY STATE
+    ───────────────────────────────────────────── */
+    .empty {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 20px;
+      gap: 12px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .empty-emoji { font-size: 3.5rem; }
+    .empty-title { font-size: 1.05rem; font-weight: 700; color: var(--text2); }
+    .empty-sub   { font-size: .88rem; max-width: 280px; }
+
+    /* ─────────────────────────────────────────────
+       SKELETON LOADER (optional polish)
+    ───────────────────────────────────────────── */
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+
+    /* ─────────────────────────────────────────────
+       RESPONSIVE — Desktop upgrades
+    ───────────────────────────────────────────── */
+    @media (min-width: 640px) {
+      body { padding-bottom: 24px; }
+
+      /* hide bottom nav on desktop, show top tab bar instead */
+      .bottom-nav { display: none; }
+      .desktop-tabs {
+        display: flex !important;
+        justify-content: center;
+        background: var(--surface);
+        border-bottom: 2px solid var(--border);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .search-bar { top: 52px; } /* below desktop tab bar */
+    }
+
+    @media (max-width: 639px) {
+      .desktop-tabs { display: none !important; }
+      .grid { grid-template-columns: 1fr; padding: 0 10px; }
+    }
+
+    /* Desktop Tab Bar */
+    .desktop-tabs {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .dtab {
+      padding: 14px 28px;
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--muted);
+      border-bottom: 3px solid transparent;
+      transition: all .18s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+    }
+    .dtab:hover { background: var(--surface2); }
+    .dtab.active-todos { color: #1a2744; border-bottom-color: #1a2744; }
+    .dtab.active-saude { color: var(--red);  border-bottom-color: var(--red);  background: var(--red-light); }
+    .dtab.active-edu   { color: var(--blue); border-bottom-color: var(--blue); background: var(--blue-light); }
+    .dtab-count {
+      background: currentColor;
+      color: #fff;
+      font-size: .65rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 10px;
+      opacity: .85;
+    }
+
+    /* ─────────────────────────────────────────────
+       UTILITY
+    ───────────────────────────────────────────── */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-title">🗺️ Equipamentos Públicos</div>
+  <div class="header-sub">Peruíbe / SP — Saúde &amp; Educação</div>
+  <div class="header-stats">
+    <div class="stat-pill">🏥 <span id="count-saude">38</span> Saúde</div>
+    <div class="stat-pill">🏫 <span id="count-edu">41</span> Educação</div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     DESKTOP TAB BAR (≥640 px)
+══════════════════════════════════════════ -->
+<nav class="desktop-tabs" role="tablist" aria-label="Categoria">
+  <button class="dtab active-todos" id="dtab-all"   onclick="setTab('todos')"    role="tab" aria-selected="true">
+    📋 Todos <span class="dtab-count" id="dc-all">79</span>
+  </button>
+  <button class="dtab" id="dtab-saude" onclick="setTab('saude')"   role="tab" aria-selected="false">
+    🏥 Saúde <span class="dtab-count" id="dc-saude">38</span>
+  </button>
+  <button class="dtab" id="dtab-edu"   onclick="setTab('educacao')" role="tab" aria-selected="false">
+    🏫 Educação <span class="dtab-count" id="dc-edu">41</span>
+  </button>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     SEARCH BAR (sticky)
+══════════════════════════════════════════ -->
+<div class="search-bar" role="search">
+  <div class="search-inner">
+    <span class="search-icon-el" aria-hidden="true">🔍</span>
+    <input
+      class="search-input"
+      id="search"
+      type="search"
+      inputmode="search"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+      placeholder="Buscar por nome, bairro, tipo…"
+      aria-label="Buscar equipamentos"
+      oninput="onSearch()"
+    />
+    <button class="search-clear" id="search-clear" aria-label="Limpar busca" onclick="clearSearch()">✕</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FILTER CHIPS
+══════════════════════════════════════════ -->
+<div class="filters-wrap" role="group" aria-label="Filtrar por tipo">
+  <div class="filters-scroll" id="filter-chips"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     RESULTS INFO
+══════════════════════════════════════════ -->
+<div class="results-bar">
+  <span class="results-count" id="results-count" aria-live="polite">79 equipamentos</span>
+  <button class="clear-btn" id="clear-all-btn" onclick="clearAll()">Limpar filtros</button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CARDS GRID
+══════════════════════════════════════════ -->
+<main class="grid" id="grid" role="main" aria-label="Lista de equipamentos"></main>
+
+<!-- ══════════════════════════════════════════
+     BOTTOM NAV (mobile, ≤639 px)
+══════════════════════════════════════════ -->
+<nav class="bottom-nav" role="tablist" aria-label="Categoria">
+  <button class="nav-btn active-todos" id="nav-all"   onclick="setTab('todos')"    role="tab" aria-selected="true">
+    <span class="nav-icon">📋</span>
+    <span>Todos</span>
+    <span class="nav-count" id="nc-all">79</span>
+  </button>
+  <button class="nav-btn" id="nav-saude" onclick="setTab('saude')"   role="tab" aria-selected="false">
+    <span class="nav-icon">🏥</span>
+    <span>Saúde</span>
+    <span class="nav-count" id="nc-saude">38</span>
+  </button>
+  <button class="nav-btn" id="nav-edu"   onclick="setTab('educacao')" role="tab" aria-selected="false">
+    <span class="nav-icon">🏫</span>
+    <span>Educação</span>
+    <span class="nav-count" id="nc-edu">41</span>
+  </button>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     DATA + LOGIC
+══════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ── DATA ────────────────────────────────────────────── */
+const DATA = [{"id":"ED15","nome":"EMEI Caraguava II","tipo":"EMEI","endereco":"Rua Benedito Alberto Liberty - Caraguava","tel1":"3455-8786","tel2":"(13)4042-3215","email1":"emei.caraguavaii@educa.peruibe.sp.gov.br","email2":"emeicaraguava2@gmail.com","lat":-24.2935186,"lon":-47.0218041,"categoria":"educacao"},{"id":"ED28","nome":"EMEI Prof Rosane dos Santos","tipo":"EMEI","endereco":"Avenida Padre Manoel da Nóbrega, 20- Caraguava","tel1":"3455-8320","tel2":"(13)4042-3228","email1":"emei.professorarosane@educa.peruibe.sp.gov.br","email2":"emei_caraguava@hotmail.com","lat":-24.2916891,"lon":-47.0219792,"categoria":"educacao"},{"id":"ED2","nome":"EMEF Carmen Cleuser Fraga Pimentel","tipo":"EMEF","endereco":"Rua Cardeal Marco Antonio Barbarigo - Jardim Caraguava","tel1":"3455-7144","tel2":"(13)4042-3186","email1":"emef.professoracarmen@educa.peruibe.sp.gov","email2":"emefcarmenpimentel@hotmail.com","lat":-24.2994054,"lon":-47.0130779,"categoria":"educacao"},{"id":"ED18","nome":"EMEI Caraminguava IV","tipo":"EMEI","endereco":"Rua Roberto Longhi, 279 - Caraminguava","tel1":"3453-5074","tel2":"(13)4042-3217","email1":"emei.caraminguavaIV@educa.peruibe.sp.gov.br","email2":"emeicaraminguava4@gmail.com","lat":-24.3032287,"lon":-47.0245967,"categoria":"educacao"},{"id":"ED17","nome":"EMEI Caraminguava III","tipo":"EMEI","endereco":"Avenida Tancredo Almeida Neves, 2591 - Caraminguava","tel1":"3453-4492","tel2":"(13)4042-3216","email1":"emei.caraminguavaiii@educa.peruibe.sp.gov.br","email2":"Emeicaraminguava3@gmail.com","lat":-24.3019239,"lon":-47.0230214,"categoria":"educacao"},{"id":"ED1","nome":"EMEF Alvaro Pereira Gaspar","tipo":"EMEF","endereco":"Rua Roberto Longhi, 133 - Caraminguava","tel1":"3455-9195","tel2":null,"email1":"emef.alvaro@educa.peruibe.sp.gov.br","email2":"emefalvaro@hotmail.com","lat":-24.3017335,"lon":-47.0231215,"categoria":"educacao"},{"id":"ED13","nome":"EMEF Rozangela Anunciada Silva","tipo":"EMEF","endereco":"Rua Manoel Ferreira da Silva, 401 - Caraminguava","tel1":"3455-9544","tel2":null,"email1":"emef.professorarozangela@educa.peruibe.sp.gov.br","email2":"emefjardimcaraminguava@hotmail.com","lat":-24.3076368,"lon":-47.0188112,"categoria":"educacao"},{"id":"ED33","nome":"EMEI Vilza Alves Sodré","tipo":"EMEI","endereco":"Rua Dr. Itatiba, 247- Jd. Caraminguava","tel1":"3453-4745","tel2":"(13)4042-3234","email1":"emei.vilza@educa.peruibe.sp.gov.br","email2":"emeicaraminguava@gmail.com","lat":-24.3079055,"lon":-47.0192344,"categoria":"educacao"},{"id":"ED29","nome":"EMEI São João Batista II","tipo":"EMEI","endereco":"Avenida Carlos Raimundo Peppe, 1009 - São João Batista II","tel1":"3453-6082","tel2":"(13)4042-3229","email1":"smei.saojoao@educa.peruibe.sp.gov.br","email2":"emeisaojoaobatista2@gmail.com","lat":-24.2976246,"lon":-46.9974729,"categoria":"educacao"},{"id":"ED9","nome":"EMEF Prof. Fernando Nepomuceno Filho","tipo":"EMEF","endereco":"Avenida Eduardo Alvarez Machado, 1159 - Balneário Samburá","tel1":"3454-1432","tel2":"(13)4042-3174","email1":"emef.professorfernando@educa.peruibe.sp.gov.br","email2":"emeffernando@gmail.com","lat":-24.3041488,"lon":-46.9899794,"categoria":"educacao"},{"id":"ED10","nome":"EMEF Professora Delcélia Joselita Machado Bezerra","tipo":"EMEF","endereco":"Rua Carlos Drummond de Andrade, 372 - Vila Romar","tel1":"3453-4363","tel2":"(13)4042-3191","email1":"emef.professoradelcelia@educa.peruibe.sp.gov.br","email2":"emefdelcelia@gmail.com","lat":-24.304359,"lon":-47.003378,"categoria":"educacao"},{"id":"ED25","nome":"EMEI Prof Jacira Marques Corrêa Ubrig","tipo":"EMEI","endereco":"Rua Araguare, 516 - Jd. Ribamar","tel1":"3455-7145","tel2":"(13)4042-3225","email1":"emei.professorajacira@educa.peruibe.sp.gov.br","email2":"jardim.ribamar@gmail.com","lat":-24.3040992,"lon":-46.9987414,"categoria":"educacao"},{"id":"ED22","nome":"EMEI Marise Helena Correia","tipo":"EMEI","endereco":"Rua Taquari, 281 - Jd. Ribamar","tel1":"3454-1737","tel2":"(13)4042-3223","email1":"emei.marise@educa.peruibe.sp.gov.br","email2":"Emeijardimribamar2@gmail.com","lat":-24.3048329,"lon":-46.9977275,"categoria":"educacao"},{"id":"ED27","nome":"EMEI Prof Renata Dias da Cruz Monteiro","tipo":"EMEI","endereco":"Rua Paulo Okio Okama, 39 - Vila Romar","tel1":"3455-8008","tel2":"(13)4042-3227","email1":"emei.professorarenata@educa.peruibe.sp.gov.br","email2":"emeiromar@gmail.com","lat":-24.3073126,"lon":-47.003736,"categoria":"educacao"},{"id":"ED31","nome":"EMEI Vereador Ana Maria Mesquita","tipo":"EMEI","endereco":"Avenida Vereador Victor Caetano dos Santos, 145 - Jd. Brasil","tel1":"3455-5248","tel2":"(13)4042-3231","email1":"emei.anamariam@educa.peruibe.sp.gov.br","email2":"emeivillaromar@hotmail.com","lat":-24.3059069,"lon":-47.0109261,"categoria":"educacao"},{"id":"ED11","nome":"EMEF Prof. Geraldo Parentes Vieira","tipo":"EMEF","endereco":"Rua João Batista Colacico, 320 - Vila Peruibe","tel1":"3455-7077","tel2":"(13)4042-3192","email1":"emef.professorgeraldo@educa.peruibe.sp.gov.br","email2":"emefgeraldo@hotmail.com","lat":-24.3059271,"lon":-47.0073783,"categoria":"educacao"},{"id":"ED20","nome":"EMEI Jd. Brasil","tipo":"EMEI","endereco":"Avenida Vereador Victor Caetano dos Santos, 145 - Jd. Brasil","tel1":"3453-4748","tel2":"(13)4042-3219","email1":"emei.jardimsaojose@educa.peruibe.sp.gov.br","email2":"emeiJardimBrasil@hotmail.com","lat":-24.3004284,"lon":-47.0111558,"categoria":"educacao"},{"id":"ED16","nome":"EMEI Jd. Peruibe I","tipo":"EMEI","endereco":"Avenida Padre Autoro Pedrosa, 445 - Jd. Peruibe","tel1":"3455-9547","tel2":"(13)4042-3214","email1":"emei.jardinperuibe@educa.peruibe.sp.gov.br","email2":"emeijardimperuibe@hotmail.com","lat":-24.3086018,"lon":-47.0088498,"categoria":"educacao"},{"id":"ED30","nome":"EMEI Stella Bertho","tipo":"EMEI","endereco":"Rua Eiras Garcia, 198 - Vila Peruibe","tel1":"3455-4462","tel2":"(13)4042-3230","email1":"emei.stellabertho@educa.peruibe.sp.gov.br","email2":"emeistella@gmail.com","lat":-24.3122024,"lon":-47.008478,"categoria":"educacao"},{"id":"ED12","nome":"EMEF Profª Edina Pereira de Lima","tipo":"EMEF","endereco":"Rua Bragança, 53 - Vila Peruibe","tel1":"3455-7089","tel2":"(13)4042-3193","email1":"emef.professoraedina@educa.peruibe.sp.gov.br","email2":"emefedina@gmail.com","lat":-24.3133088,"lon":-47.0089851,"categoria":"educacao"},{"id":"ED8","nome":"EMEF Carlos Drummond de Andrade","tipo":"EMEF","endereco":"Avenida Maria Luiza Borges Pinheiro, 1133 - Centro","tel1":"3455-7065","tel2":"(13)4042-3173","email1":"emef.drummond@educa.peruibe.sp.gov.br","email2":"emefdrummond@hotmail.com","lat":-24.3186508,"lon":-47.0053461,"categoria":"educacao"},{"id":"ED21","nome":"EMEI Herminia Gilda Zanetti Franco","tipo":"EMEI","endereco":"Rua Padre Autoro Pedrosa, 1228 - Centro","tel1":"3455-7064","tel2":"(13)4042-3222","email1":"emei.herminia@educa.peruibe.sp.gov.br","email2":"emei.herminia@gmail.com","lat":-24.3200888,"lon":-47.003881,"categoria":"educacao"},{"id":"ED6","nome":"EMEF Altino Arantes","tipo":"EMEF","endereco":"Avenida Padre Leonardo Nunes, 910 - Centro","tel1":"3451-1062","tel2":"(13)4042-3169","email1":"emef.altinoarantes@educa.peruibe.sp.gov.br","email2":"emefaltinoarantes@hotmail.com","lat":-24.3183016,"lon":-46.9989603,"categoria":"educacao"},{"id":"ED3","nome":"EMEF Célio de Moura Pinto","tipo":"EMEF","endereco":"Rua Benedito Calasans do Nascimento, 29 - Centro","tel1":"3455-4254","tel2":"(13)4042-3187","email1":"emef.celio@educa.peruibe.sp.gov.br","email2":"emefcelio@gmail.com","lat":-24.3226888,"lon":-47.0006748,"categoria":"educacao"},{"id":"ED19","nome":"EMEI Avenida Martinha","tipo":"EMEI","endereco":"Rua Marechal Floriano Peixoto, 48 - Centro","tel1":"3455-7063","tel2":"(13)4042-3218","email1":"emei.avenidam@educa.peruibe.sp.gov.br","email2":"emei_avenida@hotmail.com","lat":-24.325094,"lon":-47.0021688,"categoria":"educacao"},{"id":"ED24","nome":"EMEI Jardim Iate Clube","tipo":"EMEI","endereco":"Rua Jardim Iate Clube, s/n","tel1":"3451-1068","tel2":"(13)4042-3224","email1":"emei.jardiniateclube@educa.peruibe.sp.gov.br","email2":"emeiiateclube@hotmail.com","lat":-24.3255543,"lon":-47.0004592,"categoria":"educacao"},{"id":"ED5","nome":"EMEF Aníbal Siqueira de Castro","tipo":"EMEF","endereco":"Rua Artur do Amaral Pereira, 131 - Iate Clube","tel1":"3451-1063","tel2":"(13)4042-3168","email1":"emef.anibal@educa.peruibe.sp.gov.br","email2":"emefanibal@hotmail.com","lat":-24.3277483,"lon":-47.0010869,"categoria":"educacao"},{"id":"ED4","nome":"EMEF Deputado David Leme de Almeida","tipo":"EMEF","endereco":"Rua Boa Vista, 165 - Chácara Solar Peruibe","tel1":"3451-1061","tel2":"(13)4042-3188","email1":"emef.david@educa.peruibe.sp.gov.br","email2":"emdavidleme@gmail.com","lat":-24.3357016,"lon":-47.0093027,"categoria":"educacao"},{"id":"ED7","nome":"EMEF Arace Teixeira Melo","tipo":"EMEF","endereco":"Rua Estivadores, 29 - Chácara Solar Peruibe","tel1":"3451-1064","tel2":"(13)4042-3170","email1":"emef.aracem@educa.peruibe.sp.gov.br","email2":"emef.aracem@gmail.com","lat":-24.3359988,"lon":-47.0137573,"categoria":"educacao"},{"id":"ED32","nome":"EMEI João Cabral de Melo Neto","tipo":"EMEI","endereco":"Rua Estivadores, 50 - Chácara Solar Peruibe","tel1":"3451-1285","tel2":"(13)4042-3232","email1":"emei.joaocabral@educa.peruibe.sp.gov.br","email2":"emeijoaocabral@hotmail.com","lat":-24.3367048,"lon":-47.0140463,"categoria":"educacao"},{"id":"ED26","nome":"EMEI Riviera de São Lourenço","tipo":"EMEI","endereco":"Rua das Samaumas, 31 - Riviera","tel1":"3454-3068","tel2":"(13)4042-3226","email1":"emei.riveira@educa.peruibe.sp.gov.br","email2":"emeiriviera@gmail.com","lat":-24.3079124,"lon":-46.9657066,"categoria":"educacao"},{"id":"ED14","nome":"EMEF Eduardo Martins","tipo":"EMEF","endereco":"Rua Pinheiro, 12 - Riviera de São Lourenço","tel1":"3454-3161","tel2":"(13)4042-3194","email1":"emef.eduardomartins@educa.peruibe.sp.gov.br","email2":"emef_riveira@hotmail.com","lat":-24.3103978,"lon":-46.9634024,"categoria":"educacao"},{"id":"ED23","nome":"EMEI Maria Bonita Machado Montoro","tipo":"EMEI","endereco":"Rua Tupã, 68 - Riviera de São Lourenço","tel1":"3454-3063","tel2":"(13)4042-3209","email1":"emei.mariabonita@educa.peruibe.sp.gov.br","email2":"emeimariabonita@gmail.com","lat":-24.316009,"lon":-46.9575388,"categoria":"educacao"},{"id":"ED34","nome":"EMEI Barra do Una","tipo":"EMEI","endereco":"Estrada do Una, 180 - Barra do Una","tel1":"3455-1337","tel2":"(13)4042-3235","email1":"emei.barradouna@educa.peruibe.sp.gov.br","email2":"emei.barradouna@gmail.com","lat":-24.4365682,"lon":-47.0679453,"categoria":"educacao"},{"id":"ED35","nome":"EMEF Barra do Una","tipo":"EMEF","endereco":"Rua Faustino Santana, 51 - Barra do Una","tel1":"3455-1337","tel2":"(13)4042-3199","email1":"emef.barradouna@educa.peruibe.sp.gov.br","email2":"emefbarradouna@gmail.com","lat":-24.4374249,"lon":-47.0691509,"categoria":"educacao"},{"id":"ED36","nome":"EMEF Guaraú","tipo":"EMEF","endereco":"Rua Iara, 88 - Guaraú","tel1":"3457-1067","tel2":"(13)4042-3200","email1":"emef.guarau@educa.peruibe.sp.gov.br","email2":"emefguarau@gmail.com","lat":-24.3598226,"lon":-47.0237023,"categoria":"educacao"},{"id":"ED37","nome":"EMEIF Bananal","tipo":"EMEIF","endereco":"Rodovia Casemiro Teixeira, km 15 - Sítio Rio do Ouro","tel1":"3455-5494","tel2":"(13)4042-3196","email1":"emeif.bananal@educa.peruibe.sp.gov.br","email2":"emef.bananal@gmail.com","lat":-24.1995374,"lon":-47.0332286,"categoria":"educacao"},{"id":"ED38","nome":"EMEI Bananal","tipo":"EMEI","endereco":"Rodovia Casemiro Teixeira, km 15 - Sítio Rio do Ouro","tel1":"3453-5494","tel2":null,"email1":"emei.bananal@educa.peruibe.sp.gov.br","email2":null,"lat":-24.2004199,"lon":-47.033183,"categoria":"educacao"},{"id":"ED39","nome":"EMEF Nova Itariri","tipo":"EMEF","endereco":"Rua Maguari, 136 - Cidade Balneária Nova Peruibe","tel1":"3455-4563","tel2":"(13)4042-3198","email1":"emef.novaitariri@educa.peruibe.sp.gov.br","email2":"emefnovaitariri@gmail.com","lat":-24.2893516,"lon":-47.029949,"categoria":"educacao"},{"id":"SA1","nome":"USAFA Nova Itariri","tipo":"USAFA","endereco":"Rua Marília - Cidade Balneária Nova Peruibe","tel1":"(13)3455-4563","tel2":null,"email1":null,"email2":null,"lat":-24.2918584,"lon":-47.0287168,"categoria":"saude"},{"id":"SA2","nome":"USAFA Caraguava","tipo":"USAFA","endereco":"Rua Santo Anastácio, 441 - Caraguava","tel1":"(13)3451-1072","tel2":null,"email1":null,"email2":null,"lat":-24.2969853,"lon":-47.0232185,"categoria":"saude"},{"id":"SA3","nome":"USAFA Santa Izabel","tipo":"USAFA","endereco":"Rua Imbuia, 515 - Santa Izabel","tel1":"(13)3455-9175","tel2":null,"email1":null,"email2":null,"lat":-24.312048,"lon":-47.0231484,"categoria":"saude"},{"id":"SA4","nome":"USAFA Jardim Veneza","tipo":"USAFA","endereco":"Rua Ranulfo O. Lacerda, 401 - Jardim Veneza","tel1":"(13)3455-9175","tel2":null,"email1":null,"email2":null,"lat":-24.323567,"lon":-47.0121282,"categoria":"saude"},{"id":"SA5","nome":"USAFA Jardim Brasil","tipo":"USAFA","endereco":"Avenida Tancredo Neves, 1265 - Jardim Brasil","tel1":"(13)3455-5629","tel2":null,"email1":null,"email2":null,"lat":-24.3079748,"lon":-47.0058073,"categoria":"saude"},{"id":"SA6","nome":"Vigilância Sanitária","tipo":"Vigilância","endereco":"Rua Jacana, 125 - Centro","tel1":"(13)3455-8403","tel2":null,"email1":null,"email2":null,"lat":-24.3236996,"lon":-47.0019658,"categoria":"saude"},{"id":"SA7","nome":"Casa da Mulher e da Criança","tipo":"Assistência","endereco":"Rua Rosa Gatti Fortuna, 83 - Centro","tel1":"(13)3451-1000","tel2":null,"email1":null,"email2":null,"lat":-24.3202617,"lon":-47.003623,"categoria":"saude"},{"id":"SA8","nome":"SAMU","tipo":"Emergência","endereco":"Rua Alfredo Gomes, 39 - Centro","tel1":"(13)3451-3044","tel2":null,"email1":null,"email2":null,"lat":-24.3193893,"lon":-47.0029984,"categoria":"saude"},{"id":"SA9","nome":"Maternidade Municipal","tipo":"Hospital","endereco":"Rua Alfredo Gomes, 46 - Centro","tel1":"(13)4042-1183","tel2":null,"email1":null,"email2":null,"lat":-24.3189938,"lon":-47.0026578,"categoria":"saude"},{"id":"SA10","nome":"AME – Ambulatório Médico de Especialidades","tipo":"Especialidades","endereco":"Rua Darcy Lacerda, 50 - Pq. Daville","tel1":"(13)3451-1075","tel2":null,"email1":null,"email2":null,"lat":-24.3128773,"lon":-47.0023671,"categoria":"saude"},{"id":"SA11","nome":"CEO – Centro de Especialidades Odontológicas","tipo":"Odontologia","endereco":"Rua Alfredo Gomes, 46 - Centro","tel1":"(13)3451-3044","tel2":null,"email1":null,"email2":null,"lat":-24.3189938,"lon":-47.0026578,"categoria":"saude"},{"id":"SA12","nome":"UPA – Unidade de Pronto Atendimento","tipo":"Emergência","endereco":"Rua Alfredo Gomes, 46 - Centro","tel1":"(13)3455-3210","tel2":null,"email1":null,"email2":null,"lat":-24.3189938,"lon":-47.0026578,"categoria":"saude"},{"id":"SA13","nome":"USAFA Torre","tipo":"USAFA","endereco":"Rua Joaquim Augusto Ferreira dos Santos, 38 - Jd. Torre","tel1":"(13)3455-9175","tel2":null,"email1":null,"email2":null,"lat":-24.3267948,"lon":-47.0081777,"categoria":"saude"},{"id":"SA14","nome":"USAFA Jd. Ribamar","tipo":"USAFA","endereco":"Rua Araguare, 501 - Jd. Ribamar","tel1":"(13)3455-9175","tel2":null,"email1":null,"email2":null,"lat":-24.3018628,"lon":-46.9986756,"categoria":"saude"},{"id":"SA15","nome":"USAFA Vila Peruibe","tipo":"USAFA","endereco":"Rua Bragança, 75 - Vila Peruibe","tel1":"(13)3455-5629","tel2":null,"email1":null,"email2":null,"lat":-24.3132186,"lon":-47.0087956,"categoria":"saude"},{"id":"SA16","nome":"USAFA Parque do Trevo","tipo":"USAFA","endereco":"Rua Princesa Isabel, 153 - Parque do Trevo","tel1":"(13)3455-9175","tel2":null,"email1":null,"email2":null,"lat":-24.3143498,"lon":-46.9895636,"categoria":"saude"},{"id":"SA17","nome":"Academia de Saúde","tipo":"Prevenção","endereco":"Av. Pe. Leonardo Nunes, 388 - Centro","tel1":"(13)3451-1070","tel2":null,"email1":null,"email2":null,"lat":-24.3171777,"lon":-46.9958636,"categoria":"saude"},{"id":"SA18","nome":"AMFFITO","tipo":"Reabilitação","endereco":"Rua Tamandaré, 81 - Centro","tel1":"(13)3451-1000","tel2":null,"email1":null,"email2":null,"lat":-24.3219064,"lon":-47.0018038,"categoria":"saude"},{"id":"SA19","nome":"Laboratório Municipal","tipo":"Laboratório","endereco":"Rua Alfredo Gomes, 46 - Centro","tel1":"(13)4042-1183","tel2":null,"email1":null,"email2":null,"lat":-24.3189938,"lon":-47.0026578,"categoria":"saude"},{"id":"SA20","nome":"Centro de Controle de Zoonoses","tipo":"Vigilância","endereco":"Rua Encarnacion Rodrigues Fumagalli, 1031 - Leão Novaes","tel1":"(13)3451-1000","tel2":null,"email1":null,"email2":null,"lat":-24.2613638,"lon":-46.9706659,"categoria":"saude"},{"id":"SA21","nome":"USAFA Recreio Santista","tipo":"USAFA","endereco":"Rua David Sabino Soares, 670 – Recreio Santista","tel1":"(13)3456-1466","tel2":null,"email1":null,"email2":null,"lat":-24.2484756,"lon":-47.0015782,"categoria":"saude"},{"id":"SA22","nome":"USAFA Bananal","tipo":"USAFA","endereco":"Estrada Armando Cunha, 736 - Sítio Rio do Ouro","tel1":null,"tel2":null,"email1":null,"email2":null,"lat":-24.2009174,"lon":-47.0326851,"categoria":"saude"},{"id":"SA23","nome":"USAFA Guaraú","tipo":"USAFA","endereco":"Rua Cesário M. Faria, 678 - Guaraú","tel1":"(13)3457-1072","tel2":null,"email1":null,"email2":null,"lat":-24.3599295,"lon":-47.0208923,"categoria":"saude"},{"id":"SA24","nome":"USAFA Barra do Una","tipo":"USAFA","endereco":"Estrada do Una - Barra do Una","tel1":null,"tel2":null,"email1":null,"email2":null,"lat":-24.4403522,"lon":-47.0714501,"categoria":"saude"},{"id":"SA25","nome":"Laboratório Municipal (Lamário)","tipo":"Laboratório","endereco":"Avenida Mario Covas Jr, 204 - Centro","tel1":null,"tel2":null,"email1":null,"email2":null,"lat":-24.3292441,"lon":-47.0002961,"categoria":"saude"},{"id":"SA26","nome":"Serviço de Vigilância Epidemiológica","tipo":"Vigilância","endereco":"Rua Jacana, 125 - Centro","tel1":null,"tel2":null,"email1":null,"email2":null,"lat":-24.3236996,"lon":-47.0019658,"categoria":"saude"},{"id":"SA27","nome":"CAPS – Casa de Atenção Psicossocial","tipo":"Saúde Mental","endereco":"Rua Diogo Porfírio Santana, 305/301","tel1":"(13) 3351-3044","tel2":null,"email1":null,"email2":null,"lat":-24.3189383,"lon":-46.9974232,"categoria":"saude"},{"id":"SA28","nome":"Casa da Criança e do Adolescente","tipo":"Assistência","endereco":"Rua Rosa Gatti Fortuna, 83 - Centro","tel1":"(13)3451-1000","tel2":null,"email1":null,"email2":null,"lat":-24.3200526,"lon":-47.0035325,"categoria":"saude"},{"id":"SA29","nome":"Farmácia Central","tipo":"Farmácia","endereco":"Rua Alfredo Gomes - Centro","tel1":null,"tel2":null,"email1":null,"email2":null,"lat":-24.3189331,"lon":-47.0028096,"categoria":"saude"},{"id":"SA30","nome":"USAFA Centro","tipo":"USAFA","endereco":"Rua Erasmo Pinheiro Ribas, 846 - Centro","tel1":null,"tel2":null,"email1":null,"email2":null,"lat":-24.3209118,"lon":-46.9937998,"categoria":"saude"},{"id":"SA31","nome":"UPA","tipo":"Emergência","endereco":"Rua Alfredo Gomes, 46 - Centro","tel1":null,"tel2":null,"email1":null,"email2":null,"lat":-24.3192477,"lon":-47.0030942,"categoria":"saude"},{"id":"SA32","nome":"EMAD","tipo":"Atenção Domiciliar","endereco":"Av. dos Expedicionários, 845 - Centro","tel1":null,"tel2":null,"email1":null,"email2":null,"lat":-24.3190916,"lon":-47.0027617,"categoria":"saude"},{"id":"SA33","nome":"Banco de Leite Humano","tipo":"Hospital","endereco":"Rua Rosa Gatti Fortuna, 83 - Centro","tel1":null,"tel2":null,"email1":null,"email2":null,"lat":-24.3199722,"lon":-47.0033075,"categoria":"saude"},{"id":"SA34","nome":"CAPSi – Centro de Atenção Psicossocial Infantil","tipo":"Saúde Mental","endereco":"Av. Pe. Leonardo Nunes, 588 - Centro","tel1":"(13) 3451-3044 r3032","tel2":null,"email1":null,"email2":null,"lat":-24.316957,"lon":-46.9955746,"categoria":"saude"},{"id":"SA35","nome":"SAE – Serviço de Atendimento Especializado","tipo":"Especialidades","endereco":"Av. dos Expedicionários, 845-B - Centro","tel1":null,"tel2":null,"email1":null,"email2":null,"lat":-24.3192301,"lon":-47.0027322,"categoria":"saude"},{"id":"SA36","nome":"Regulação de Vagas","tipo":"Regulação","endereco":"Rua Alfredo Gomes, 46-B - Centro","tel1":null,"tel2":null,"email1":null,"email2":null,"lat":-24.3191708,"lon":-47.0030777,"categoria":"saude"},{"id":"SA37","nome":"USAFA Oásis","tipo":"USAFA","endereco":"Rua das Camélias, 238 - Parque Turístico","tel1":null,"tel2":null,"email1":null,"email2":null,"lat":-24.2933688,"lon":-46.9637974,"categoria":"saude"},{"id":"SA38","nome":"USAFA Bruno Covas","tipo":"USAFA","endereco":"Av. Dr. Tancredo de Almeida Neves, 1265 - Jardim Brasil","tel1":null,"tel2":null,"email1":null,"email2":null,"lat":-24.3080154,"lon":-47.0125214,"categoria":"saude"}];
+
+/* ── ICON MAP ─────────────────────────────────────── */
+const ICONS = {
+  EMEI:'🎒', EMEF:'📚', EMEIF:'📖', Outro:'📋',
+  USAFA:'🏥', Hospital:'🏨', Emergência:'🚨', Odontologia:'🦷',
+  Especialidades:'🩺', 'Saúde Mental':'🧠', Laboratório:'🧪',
+  Vigilância:'🔬', Prevenção:'🏃', Reabilitação:'♿',
+  Farmácia:'💊', Assistência:'🤝', 'Atenção Domiciliar':'🏠',
+  Regulação:'📋', default:'📍'
+};
+const icon = t => ICONS[t] || ICONS.default;
+
+/* ── STATE ─────────────────────────────────────────── */
+let tab    = 'todos';
+let filter = null;
+let query  = '';
+
+/* ── HELPERS ───────────────────────────────────────── */
+const $ = id => document.getElementById(id);
+const esc = s => s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
+
+function mapsUrl(e) {
+  if (e.lat && e.lon)
+    return `https://www.google.com/maps/dir/?api=1&destination=${e.lat},${e.lon}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((e.nome||'')+' '+(e.endereco||'')+' Peruíbe SP')}`;
+}
+
+function telDigits(t) { return t.replace(/\D/g,''); }
+
+/* ── FILTER / SEARCH ──────────────────────────────── */
+function getVisible() {
+  return DATA.filter(e => {
+    if (tab !== 'todos' && e.categoria !== tab) return false;
+    if (filter && e.tipo !== filter) return false;
+    if (query) {
+      const hay = [e.nome, e.tipo, e.endereco, e.id].filter(Boolean).join(' ').toLowerCase();
+      if (!hay.includes(query)) return false;
+    }
+    return true;
+  }).sort((a,b) => (a.nome||'').localeCompare(b.nome||'','pt-BR'));
+}
+
+/* ── SET TAB ──────────────────────────────────────── */
+function setTab(t) {
+  tab    = t;
+  filter = null;
+
+  // bottom nav
+  ['all','saude','edu'].forEach(k => {
+    const map = {all:'todos', saude:'saude', edu:'educacao'};
+    const active = map[k] === t ? `active-${k === 'all' ? 'todos' : k}` : '';
+    $(`nav-${k}`).className = `nav-btn ${active}`.trim();
+    $(`nav-${k}`).setAttribute('aria-selected', map[k] === t);
+  });
+  // desktop tabs
+  ['all','saude','edu'].forEach(k => {
+    const map = {all:'todos', saude:'saude', edu:'educacao'};
+    const active = map[k] === t ? `active-${k === 'all' ? 'todos' : k}` : '';
+    $(`dtab-${k}`).className = `dtab ${active}`.trim();
+    $(`dtab-${k}`).setAttribute('aria-selected', map[k] === t);
+  });
+
+  buildChips();
+  render();
+}
+
+/* ── SEARCH ───────────────────────────────────────── */
+function onSearch() {
+  query = $('search').value.toLowerCase().trim();
+  render();
+}
+function clearSearch() {
+  $('search').value = '';
+  query = '';
+  render();
+  $('search').focus();
+}
+
+/* ── CLEAR ALL ─────────────────────────────────────── */
+function clearAll() {
+  filter = null;
+  query  = '';
+  $('search').value = '';
+  buildChips();
+  render();
+}
+
+/* ── BUILD CHIPS ──────────────────────────────────── */
+function buildChips() {
+  const pool = DATA.filter(e => tab === 'todos' || e.categoria === tab);
+  const tipos = [...new Set(pool.map(e => e.tipo).filter(Boolean))].sort();
+  const wrap = $('filter-chips');
+  wrap.innerHTML = '';
+
+  tipos.forEach(t => {
+    const cat  = pool.find(e => e.tipo === t)?.categoria || 'saude';
+    const cls  = `chip chip-${cat === 'saude' ? 'saude' : 'edu'}${filter === t ? ' active' : ''}`;
+    const btn  = document.createElement('button');
+    btn.className = cls;
+    btn.setAttribute('aria-pressed', filter === t);
+    btn.setAttribute('aria-label', `Filtrar por ${t}`);
+    btn.innerHTML = `<span aria-hidden="true">${icon(t)}</span> ${esc(t)}`;
+    btn.addEventListener('click', () => {
+      filter = filter === t ? null : t;
+      buildChips();
+      render();
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+/* ── RENDER CARDS ─────────────────────────────────── */
+function render() {
+  const items = getVisible();
+  const total = items.length;
+  const grid  = $('grid');
+
+  // counts
+  const nSaude = DATA.filter(e => e.categoria==='saude').length;
+  const nEdu   = DATA.filter(e => e.categoria==='educacao').length;
+  $('count-saude').textContent = nSaude;
+  $('count-edu').textContent   = nEdu;
+  $('nc-all').textContent   = DATA.length;
+  $('nc-saude').textContent = nSaude;
+  $('nc-edu').textContent   = nEdu;
+  $('dc-all').textContent   = DATA.length;
+  $('dc-saude').textContent = nSaude;
+  $('dc-edu').textContent   = nEdu;
+
+  // results bar
+  $('results-count').textContent = `${total} equipamento${total!==1?'s':''}`;
+  const hasFilters = filter || query;
+  $('clear-all-btn').className = `clear-btn${hasFilters ? ' visible' : ''}`;
+
+  // empty
+  if (total === 0) {
+    grid.innerHTML = `
+      <div class="empty" role="status">
+        <div class="empty-emoji">🔍</div>
+        <div class="empty-title">Nenhum resultado</div>
+        <div class="empty-sub">Tente outros termos ou limpe os filtros aplicados.</div>
+      </div>`;
+    return;
+  }
+
+  // cards
+  const frag = document.createDocumentFragment();
+  items.forEach(e => {
+    const isSaude = e.categoria === 'saude';
+    const cls = isSaude ? 'cat-saude' : 'cat-edu';
+    const tels = [e.tel1, e.tel2].filter(Boolean);
+    const emails = [e.email1, e.email2].filter(Boolean);
+
+    let body = '';
+    if (e.endereco) body += infoRow('📍', esc(e.endereco));
+    if (tels.length) body += infoRow('📞', tels.map(t =>
+      `<a href="tel:${telDigits(t)}" aria-label="Ligar para ${esc(t)}">${esc(t)}</a>`
+    ).join(' &nbsp;/&nbsp; '));
+    if (emails.length) body += infoRow('✉️', emails.map(m =>
+      `<a href="mailto:${esc(m)}">${esc(m)}</a>`
+    ).join('<br>'));
+
+    const card = document.createElement('article');
+    card.className = `card ${cls}`;
+    card.setAttribute('aria-label', e.nome || 'Equipamento');
+    card.innerHTML = `
+      <div class="card-head">
+        <div class="card-icon-box" aria-hidden="true">${icon(e.tipo)}</div>
+        <div class="card-title-wrap">
+          <div class="card-name">${esc(e.nome || 'Sem nome')}</div>
+          <span class="card-badge">${esc(e.tipo || '')}</span>
+        </div>
+      </div>
+      <div class="card-body">${body || '<div class="info-row" style="color:var(--muted)">Sem dados adicionais</div>'}</div>
+      <div class="card-foot">
+        <a class="btn-maps"
+           href="${mapsUrl(e)}"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="Abrir ${esc(e.nome)} no Google Maps">
+          <span class="btn-maps-icon" aria-hidden="true">🗺️</span>
+          Ir até lá – Google Maps
+        </a>
+      </div>`;
+    frag.appendChild(card);
+  });
+
+  grid.innerHTML = '';
+  grid.appendChild(frag);
+}
+
+function infoRow(ic, content) {
+  return `<div class="info-row"><span class="info-icon" aria-hidden="true">${ic}</span><span class="info-text">${content}</span></div>`;
+}
+
+/* ── INIT ─────────────────────────────────────────── */
+buildChips();
+render();
+</script>
+</body>
+</html>
