@@ -349,37 +349,75 @@
     }
 
     /* ─────────────────────────────────────────────
-       QUICK FILTERS (Carrossel com fade indicator)
+       QUICK FILTERS (Carrossel, Indicadores e Centralização)
     ───────────────────────────────────────────── */
     .quickfilters-outer {
       position: relative;
       max-width: 1080px;
       margin: 0 auto;
+      display: flex;
+      align-items: center;
     }
 
-    /* Sombras gradientes suaves para indicar rolagem nas laterais */
-    .quickfilters-outer::before,
-    .quickfilters-outer::after {
-      content: "";
+    /* Indicadores e botões de rolagem nas duas pontas (esquerda e direita) */
+    .scroll-arrow {
       position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 24px;
-      z-index: 2;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.2s;
+      top: 4px;
+      bottom: 10px;
+      width: 44px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      opacity: 1;
+      transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s ease;
     }
 
-    .quickfilters-outer::before {
+    .scroll-arrow span {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-full);
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
+      transition: transform 0.15s, background 0.15s;
+      user-select: none;
+    }
+
+    .scroll-arrow:hover span {
+      transform: scale(1.12);
+      background: var(--primary);
+    }
+
+    .scroll-arrow:active span {
+      transform: scale(0.92);
+    }
+
+    .scroll-arrow.arrow-left {
       left: 0;
-      background: linear-gradient(to right, rgba(248, 250, 252, 0.95), transparent);
+      background: linear-gradient(to right, rgba(248, 250, 252, 0.98) 55%, transparent);
+      justify-content: flex-start;
+      padding-left: 8px;
     }
 
-    .quickfilters-outer::after {
+    .scroll-arrow.arrow-right {
       right: 0;
-      background: linear-gradient(to left, rgba(248, 250, 252, 0.95), transparent);
-      opacity: 1; /* dica inicial */
+      background: linear-gradient(to left, rgba(248, 250, 252, 0.98) 55%, transparent);
+      justify-content: flex-end;
+      padding-right: 8px;
+    }
+
+    .scroll-arrow.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.85);
     }
 
     .quickfilters-scroll {
@@ -990,9 +1028,15 @@
     </div>
   </div>
 
-  <!-- Quick Filters Carrossel -->
+  <!-- Quick Filters Carrossel com Indicadores nos 2 Lados -->
   <div class="quickfilters-outer" role="group" aria-label="Filtros rápidos por tipo">
-    <div class="quickfilters-scroll" id="filter-chips"></div>
+    <button class="scroll-arrow arrow-left hidden" id="scroll-arrow-left" aria-label="Rolar filtros para a esquerda" onclick="scrollChips('left')">
+      <span aria-hidden="true">‹</span>
+    </button>
+    <div class="quickfilters-scroll" id="filter-chips" onscroll="updateScrollIndicators()"></div>
+    <button class="scroll-arrow arrow-right" id="scroll-arrow-right" aria-label="Rolar filtros para a direita" onclick="scrollChips('right')">
+      <span aria-hidden="true">›</span>
+    </button>
   </div>
 </div>
 
@@ -1188,7 +1232,56 @@ function clearAllFilters() {
   render();
 }
 
-/* ── QUICKFILTERS (Com contagem e UX fluida) ─────── */
+/* ── NAVEGAÇÃO & CENTRALIZAÇÃO DE QUICKFILTERS ──── */
+function updateScrollIndicators() {
+  const wrap = $('filter-chips');
+  const leftBtn = $('scroll-arrow-left');
+  const rightBtn = $('scroll-arrow-right');
+  if (!wrap || !leftBtn || !rightBtn) return;
+
+  const scrollLeft = wrap.scrollLeft;
+  const maxScroll = wrap.scrollWidth - wrap.clientWidth;
+
+  if (scrollLeft > 6) {
+    leftBtn.classList.remove('hidden');
+  } else {
+    leftBtn.classList.add('hidden');
+  }
+
+  if (maxScroll - scrollLeft > 6) {
+    rightBtn.classList.remove('hidden');
+  } else {
+    rightBtn.classList.add('hidden');
+  }
+}
+
+function scrollChips(direction) {
+  const wrap = $('filter-chips');
+  if (!wrap) return;
+  const offset = direction === 'left' ? -220 : 220;
+  wrap.scrollBy({ left: offset, behavior: 'smooth' });
+  setTimeout(updateScrollIndicators, 320);
+}
+
+function centerChip(chip) {
+  if (!chip) return;
+  const wrap = $('filter-chips');
+  if (!wrap) return;
+
+  const chipRect = chip.getBoundingClientRect();
+  const wrapRect = wrap.getBoundingClientRect();
+  const currentScroll = wrap.scrollLeft;
+  const targetScroll = currentScroll + (chipRect.left - wrapRect.left) - (wrapRect.width / 2) + (chipRect.width / 2);
+
+  wrap.scrollTo({
+    left: Math.max(0, targetScroll),
+    behavior: 'smooth'
+  });
+
+  setTimeout(updateScrollIndicators, 350);
+}
+
+/* ── QUICKFILTERS (Com contagem e centralização) ──── */
 function buildQuickFilters() {
   const pool = DATA.filter(item => activeTab === 'todos' || item.categoria === activeTab);
   const wrap = $('filter-chips');
@@ -1208,6 +1301,9 @@ function buildQuickFilters() {
     activeFilter = null;
     buildQuickFilters();
     render();
+    setTimeout(() => {
+      centerChip(wrap.firstElementChild);
+    }, 10);
   };
   wrap.appendChild(allChip);
 
@@ -1236,12 +1332,20 @@ function buildQuickFilters() {
     btn.setAttribute('aria-pressed', isSelected);
     btn.innerHTML = `<span>${getIcon(tipo)} ${escapeHtml(tipo)}</span><span class="qchip-count">${counts[tipo]}</span>`;
     
-    btn.onclick = (e) => {
+    btn.onclick = () => {
       activeFilter = activeFilter === tipo ? null : tipo;
       buildQuickFilters();
       render();
-      // Scroll suave para centralizar o chip ativo no mobile
-      btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
+      // Centralizar exatamente no container horizontal
+      setTimeout(() => {
+        const activeBtn = wrap.querySelector('.qchip.active-saude, .qchip.active-edu');
+        if (activeBtn) {
+          centerChip(activeBtn);
+        } else {
+          centerChip(wrap.firstElementChild);
+        }
+      }, 10);
     };
 
     wrap.appendChild(btn);
@@ -1392,6 +1496,8 @@ function render() {
 /* ── INICIALIZAÇÃO ─────────────────────────────────── */
 buildQuickFilters();
 render();
+window.addEventListener('resize', updateScrollIndicators);
+setTimeout(updateScrollIndicators, 100);
 </script>
 </body>
 </html>
