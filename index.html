@@ -268,9 +268,10 @@
        SELETOR RÁPIDO DE CATEGORIA (Saúde / Educação)
     ───────────────────────────────────────────── */
     .category-selector-wrap {
+      display: none; /* Oculto no mobile porque a navegação já existe na barra inferior (bottom-nav) */
       max-width: 520px;
       margin: 0 auto;
-      padding: 8px 12px 2px;
+      padding: 10px 16px 4px;
       width: 100%;
     }
 
@@ -1174,11 +1175,15 @@
       .bottom-nav {
         display: none;
       }
-      .desktop-nav {
+      /* No desktop, o seletor segmentado fica na sticky-toolbar e substitui a desktop-nav duplicada */
+      .category-selector-wrap {
         display: block;
       }
+      .desktop-nav {
+        display: none !important;
+      }
       .sticky-toolbar {
-        top: 51px; /* Abaixo do menu superior desktop */
+        top: 0;
       }
       .toast {
         bottom: 24px;
