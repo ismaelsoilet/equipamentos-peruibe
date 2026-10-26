@@ -268,43 +268,45 @@
        SELETOR RÁPIDO DE CATEGORIA (Saúde / Educação)
     ───────────────────────────────────────────── */
     .category-selector-wrap {
-      max-width: 1080px;
+      max-width: 520px;
       margin: 0 auto;
-      padding: 10px 16px 2px;
+      padding: 8px 12px 2px;
+      width: 100%;
     }
 
     .category-segmented-bar {
       display: flex;
       background: #e2e8f0;
-      padding: 4px;
+      padding: 3px;
       border-radius: var(--radius-full);
-      gap: 4px;
+      gap: 3px;
       position: relative;
       box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+      width: 100%;
     }
 
     .cat-pill {
       flex: 1;
+      min-width: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 8px 10px;
+      gap: 5px;
+      padding: 7px 6px;
       border-radius: var(--radius-full);
-      font-size: 0.86rem;
+      font-size: 0.8rem;
       font-weight: 700;
       color: var(--text-muted);
-      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       border: none;
       background: transparent;
-      min-height: 40px;
-      white-space: nowrap;
+      min-height: 36px;
       user-select: none;
     }
 
     .cat-pill:hover:not([class*="active-"]) {
       color: var(--text);
-      background: rgba(255, 255, 255, 0.55);
+      background: rgba(255, 255, 255, 0.6);
     }
 
     .cat-pill:active {
@@ -312,24 +314,32 @@
     }
 
     .cat-pill-icon {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .cat-pill-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .cat-pill-count {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 800;
-      padding: 2px 7px;
+      padding: 1px 5px;
       border-radius: var(--radius-full);
       background: rgba(15, 23, 42, 0.08);
       color: var(--text-soft);
       transition: all 0.2s;
+      flex-shrink: 0;
     }
 
     .cat-pill.active-todos {
       background: #0f172a;
       color: #ffffff;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
     }
     .cat-pill.active-todos .cat-pill-count {
       background: rgba(255, 255, 255, 0.22);
@@ -339,7 +349,7 @@
     .cat-pill.active-saude {
       background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
       color: #ffffff;
-      box-shadow: 0 3px 10px rgba(239, 68, 68, 0.35);
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
     }
     .cat-pill.active-saude .cat-pill-count {
       background: rgba(255, 255, 255, 0.25);
@@ -349,16 +359,14 @@
     .cat-pill.active-edu {
       background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
       color: #ffffff;
-      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.35);
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
     }
     .cat-pill.active-edu .cat-pill-count {
       background: rgba(255, 255, 255, 0.25);
       color: #ffffff;
     }
 
-    /* ─────────────────────────────────────────────
-       STICKY TOOLBAR (Search & Controls)
-    ───────────────────────────────────────────── */
+    /* ── STICKY TOOLBAR (Search & Controls) ─────────────── */
     .sticky-toolbar {
       position: sticky;
       top: 0;
@@ -373,48 +381,102 @@
     .search-container {
       max-width: 1080px;
       margin: 0 auto;
-      padding: 10px 16px 6px;
+      padding: 6px 12px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .search-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .search-box {
       flex: 1;
+      min-width: 0;
       position: relative;
       display: flex;
       align-items: center;
       background: var(--surface);
       border: 1.5px solid var(--border);
-      border-radius: var(--radius-md);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
       transition: all 0.2s ease;
-      min-height: 46px;
+      min-height: 42px;
     }
 
-    /* Botão Perto de Mim */
+    .search-box:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .search-icon {
+      padding-left: 12px;
+      font-size: 0.95rem;
+      color: var(--text-soft);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 32px 10px 8px;
+      font-size: 0.94rem;
+      border: none;
+      background: transparent;
+      color: var(--text);
+    }
+
+    .search-input::placeholder {
+      color: #94a3b8;
+    }
+
+    .search-clear-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-full);
+      background: #e2e8f0;
+      color: #475569;
+      font-size: 0.75rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .search-clear-btn:hover {
+      background: #cbd5e1;
+      color: #0f172a;
+    }
+
+    .search-input:not(:placeholder-shown) ~ .search-clear-btn {
+      display: flex;
+    }
+
+    /* Botão Perto de Mim Adaptável */
     .btn-near-me {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 0 14px;
-      height: 46px;
-      border-radius: var(--radius-md);
+      gap: 5px;
+      padding: 0 12px;
+      height: 42px;
+      border-radius: var(--radius-sm);
       border: 1.5px solid var(--border);
       background: var(--surface);
       color: var(--text-muted);
-      font-size: 0.86rem;
+      font-size: 0.84rem;
       font-weight: 700;
       white-space: nowrap;
       cursor: pointer;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       user-select: none;
       flex-shrink: 0;
@@ -434,85 +496,89 @@
       background: #0f172a;
       color: #ffffff;
       border-color: #0f172a;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.25);
     }
 
-    .btn-near-me.loading {
-      opacity: 0.8;
-      pointer-events: none;
+    .near-me-label-full {
+      display: inline;
+    }
+    .near-me-label-short {
+      display: none;
     }
 
-    .near-me-icon {
-      font-size: 1.1rem;
-      line-height: 1;
-      transition: transform 0.3s ease;
-    }
-    .btn-near-me.active .near-me-icon {
-      transform: scale(1.15);
+    @media (max-width: 480px) {
+      .near-me-label-full { display: none; }
+      .near-me-label-short { display: inline; }
+      .btn-near-me { padding: 0 10px; }
     }
 
-    /* Painel do Seletor de Raio */
+    /* Painel do Seletor de Raio Estruturado */
     .radius-panel {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
+      flex-direction: column;
+      gap: 6px;
       background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
       border: 1px solid #bfdbfe;
-      padding: 7px 12px;
-      border-radius: var(--radius-md);
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
       box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
-      animation: fadeInSlide 0.25s ease-out;
+      animation: fadeInSlide 0.2s ease-out;
     }
 
     .radius-panel.hidden {
       display: none;
     }
 
-    @keyframes fadeInSlide {
-      from {
-        opacity: 0;
-        transform: translateY(-6px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .radius-label-group {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: #1e3a8a;
-      white-space: nowrap;
-    }
-
-    .radius-chips-list {
+    .radius-header {
       display: flex;
       align-items: center;
-      gap: 5px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-      flex: 1;
-      justify-content: center;
+      justify-content: space-between;
+      gap: 6px;
     }
-    .radius-chips-list::-webkit-scrollbar {
-      display: none;
+
+    .radius-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-close-radius {
+      width: 22px;
+      height: 22px;
+      border-radius: var(--radius-full);
+      background: rgba(30, 58, 138, 0.1);
+      color: #1e3a8a;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .btn-close-radius:hover {
+      background: rgba(30, 58, 138, 0.2);
+    }
+
+    .radius-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      width: 100%;
     }
 
     .rchip {
-      padding: 4px 10px;
-      border-radius: var(--radius-full);
-      font-size: 0.78rem;
+      padding: 5px 0;
+      border-radius: var(--radius-sm);
+      font-size: 0.76rem;
       font-weight: 700;
       border: 1px solid #93c5fd;
       background: #ffffff;
       color: #1e40af;
       cursor: pointer;
+      text-align: center;
       transition: all 0.15s ease;
       white-space: nowrap;
     }
@@ -528,167 +594,39 @@
       box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
     }
 
-    .btn-close-radius {
-      width: 24px;
-      height: 24px;
-      border-radius: var(--radius-full);
-      background: rgba(30, 58, 138, 0.1);
-      color: #1e3a8a;
-      font-size: 0.78rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.15s;
-      flex-shrink: 0;
-    }
-    .btn-close-radius:hover {
-      background: rgba(30, 58, 138, 0.2);
-    }
-
-    /* Tag de Distância no Card */
-    .card-distance {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.74rem;
-      font-weight: 800;
-      color: #047857;
-      background: #d1fae5;
-      border: 1px solid #a7f3d0;
-      padding: 2px 8px;
-      border-radius: var(--radius-full);
-      letter-spacing: 0.2px;
-    }
-
-    .search-box:focus-within {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-    }
-
-    .search-icon {
-      padding-left: 14px;
-      font-size: 1rem;
-      color: var(--text-soft);
-      pointer-events: none;
-      display: flex;
-      align-items: center;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 12px 40px 12px 10px;
-      font-size: 1rem; /* >= 16px evita zoom automático no iOS */
-      border: none;
-      background: transparent;
-      color: var(--text);
-    }
-
-    .search-input::placeholder {
-      color: #94a3b8;
-    }
-
-    .search-clear-btn {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 26px;
-      height: 26px;
-      border-radius: var(--radius-full);
-      background: #e2e8f0;
-      color: #475569;
-      font-size: 0.8rem;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s;
-    }
-
-    .search-clear-btn:hover {
-      background: #cbd5e1;
-      color: #0f172a;
-    }
-
-    .search-input:not(:placeholder-shown) ~ .search-clear-btn {
-      display: flex;
-    }
-
-    /* ─────────────────────────────────────────────
-       QUICK FILTERS (Carrossel, Indicadores e Centralização)
-    ───────────────────────────────────────────── */
+    /* ── QUICK FILTERS CARROSSEL (Limpo, sem setas cobrindo texto) ── */
     .quickfilters-outer {
       position: relative;
       max-width: 1080px;
       margin: 0 auto;
-      display: flex;
-      align-items: center;
+      overflow: hidden;
     }
 
-    /* Indicadores e botões de rolagem nas duas pontas (esquerda e direita) */
-    .scroll-arrow {
+    .quickfilters-outer::before,
+    .quickfilters-outer::after {
+      content: "";
       position: absolute;
-      top: 4px;
-      bottom: 10px;
-      width: 44px;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      opacity: 1;
-      transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s ease;
-    }
-
-    .scroll-arrow span {
-      width: 28px;
-      height: 28px;
-      border-radius: var(--radius-full);
-      background: #0f172a;
-      color: #ffffff;
-      font-size: 1.15rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
-      transition: transform 0.15s, background 0.15s;
-      user-select: none;
-    }
-
-    .scroll-arrow:hover span {
-      transform: scale(1.12);
-      background: var(--primary);
-    }
-
-    .scroll-arrow:active span {
-      transform: scale(0.92);
-    }
-
-    .scroll-arrow.arrow-left {
-      left: 0;
-      background: linear-gradient(to right, rgba(248, 250, 252, 0.98) 55%, transparent);
-      justify-content: flex-start;
-      padding-left: 8px;
-    }
-
-    .scroll-arrow.arrow-right {
-      right: 0;
-      background: linear-gradient(to left, rgba(248, 250, 252, 0.98) 55%, transparent);
-      justify-content: flex-end;
-      padding-right: 8px;
-    }
-
-    .scroll-arrow.hidden {
-      opacity: 0;
+      top: 0;
+      bottom: 0;
+      width: 18px;
+      z-index: 2;
       pointer-events: none;
-      transform: scale(0.85);
+    }
+
+    .quickfilters-outer::before {
+      left: 0;
+      background: linear-gradient(to right, rgba(248, 250, 252, 0.95), transparent);
+    }
+
+    .quickfilters-outer::after {
+      right: 0;
+      background: linear-gradient(to left, rgba(248, 250, 252, 0.95), transparent);
     }
 
     .quickfilters-scroll {
       display: flex;
-      gap: 8px;
-      padding: 6px 16px 12px;
+      gap: 6px;
+      padding: 4px 12px 10px;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       scroll-snap-type: x proximity;
@@ -703,20 +641,20 @@
     .qchip {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 7px 14px;
+      gap: 5px;
+      padding: 6px 12px;
       border-radius: var(--radius-full);
       border: 1.5px solid var(--border);
       background: var(--surface);
       color: var(--text-muted);
-      font-size: 0.84rem;
+      font-size: 0.82rem;
       font-weight: 600;
       white-space: nowrap;
       scroll-snap-align: start;
       transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-      min-height: 38px;
+      min-height: 36px;
       user-select: none;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
 
     .qchip:hover {
@@ -730,21 +668,20 @@
     }
 
     .qchip-count {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 700;
-      padding: 1px 7px;
+      padding: 1px 6px;
       border-radius: var(--radius-full);
       background: #e2e8f0;
       color: var(--text-soft);
       transition: all 0.18s;
     }
 
-    /* Estados ativos temáticos */
     .qchip.active-all {
       background: #0f172a;
       border-color: #0f172a;
       color: #ffffff;
-      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.2);
     }
     .qchip.active-all .qchip-count {
       background: rgba(255, 255, 255, 0.22);
@@ -755,7 +692,7 @@
       background: var(--saude-dark);
       border-color: var(--saude-dark);
       color: #ffffff;
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+      box-shadow: 0 3px 8px rgba(239, 68, 68, 0.25);
     }
     .qchip.active-saude .qchip-count {
       background: rgba(255, 255, 255, 0.25);
@@ -766,11 +703,26 @@
       background: var(--edu-dark);
       border-color: var(--edu-dark);
       color: #ffffff;
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+      box-shadow: 0 3px 8px rgba(2, 132, 199, 0.25);
     }
     .qchip.active-edu .qchip-count {
       background: rgba(255, 255, 255, 0.25);
       color: #ffffff;
+    }
+
+    /* Tag de Distância no Card */
+    .card-distance {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #047857;
+      background: #d1fae5;
+      border: 1px solid #a7f3d0;
+      padding: 1px 7px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.2px;
     }
 
     /* ─────────────────────────────────────────────
@@ -1273,27 +1225,28 @@
      STICKY TOOLBAR (Search & Quick Filters)
 ══════════════════════════════════════════ -->
 <div class="sticky-toolbar">
-  <!-- Seletor Rápido de Tipo (Saúde / Educação) -->
+  <!-- 1. Seletor Rápido de Tipo (Saúde / Educação) Compacto e 100% Responsivo -->
   <div class="category-selector-wrap">
     <div class="category-segmented-bar" role="tablist" aria-label="Seletor rápido de tipo de equipamento">
       <button class="cat-pill active-todos" id="cat-pill-all" onclick="setTab('todos')" role="tab" aria-selected="true">
         <span class="cat-pill-icon">📋</span>
-        <span>Todos</span>
+        <span class="cat-pill-text">Todos</span>
         <span class="cat-pill-count" id="pill-count-all">79</span>
       </button>
       <button class="cat-pill" id="cat-pill-saude" onclick="setTab('saude')" role="tab" aria-selected="false">
         <span class="cat-pill-icon">🏥</span>
-        <span>Saúde</span>
+        <span class="cat-pill-text">Saúde</span>
         <span class="cat-pill-count" id="pill-count-saude">38</span>
       </button>
       <button class="cat-pill" id="cat-pill-edu" onclick="setTab('educacao')" role="tab" aria-selected="false">
         <span class="cat-pill-icon">🏫</span>
-        <span>Educação</span>
+        <span class="cat-pill-text">Educação</span>
         <span class="cat-pill-count" id="pill-count-edu">41</span>
       </button>
     </div>
   </div>
 
+  <!-- 2. Linha de Busca + Botão Perto de Mim -->
   <div class="search-container">
     <div class="search-row" role="search">
       <div class="search-box">
@@ -1314,44 +1267,38 @@
         <button class="search-clear-btn" id="search-clear" aria-label="Limpar pesquisa" onclick="clearSearch()">✕</button>
       </div>
 
-      <!-- Botão Perto de Mim -->
+      <!-- Botão Perto de Mim Adaptável -->
       <button class="btn-near-me" id="btn-near-me" onclick="toggleNearMe()" aria-label="Filtrar equipamentos perto de mim">
         <span class="near-me-icon" aria-hidden="true">🎯</span>
-        <span id="near-me-text">Perto de mim</span>
+        <span class="near-me-label-full" id="near-me-text">Perto de mim</span>
+        <span class="near-me-label-short" id="near-me-text-short">Perto</span>
       </button>
     </div>
 
-    <!-- Seletor de Raio (Perto de Mim) -->
+    <!-- 3. Seletor de Raio Estruturado em Grade -->
     <div class="radius-panel hidden" id="radius-panel" role="region" aria-label="Configuração de raio perto de mim">
-      <div class="radius-label-group">
-        <span>📏</span> <span>Raio máximo:</span>
+      <div class="radius-header">
+        <div class="radius-title">
+          <span>🎯</span> <strong>Perto de mim</strong> · Raio máximo de busca:
+        </div>
+        <button class="btn-close-radius" onclick="disableNearMe()" title="Desativar modo perto de mim" aria-label="Desativar modo perto de mim">✕</button>
       </div>
-      <div class="radius-chips-list" role="radiogroup" aria-label="Opções de raio de proximidade">
+      <div class="radius-grid" role="radiogroup" aria-label="Opções de raio de proximidade">
         <button class="rchip" id="rchip-1" onclick="setRadius(1)" role="radio" aria-checked="false">1 km</button>
         <button class="rchip active" id="rchip-3" onclick="setRadius(3)" role="radio" aria-checked="true">3 km</button>
         <button class="rchip" id="rchip-5" onclick="setRadius(5)" role="radio" aria-checked="false">5 km</button>
         <button class="rchip" id="rchip-10" onclick="setRadius(10)" role="radio" aria-checked="false">10 km</button>
-        <button class="rchip" id="rchip-all" onclick="setRadius(null)" role="radio" aria-checked="false">Sem limite</button>
+        <button class="rchip" id="rchip-all" onclick="setRadius(null)" role="radio" aria-checked="false">Todos</button>
       </div>
-      <button class="btn-close-radius" onclick="disableNearMe()" title="Desativar modo perto de mim" aria-label="Desativar modo perto de mim">✕</button>
     </div>
   </div>
 
-  <!-- Quick Filters Carrossel com Indicadores nos 2 Lados -->
+  <!-- 4. Quick Filters Carrossel Limpo (Sem setas invasivas sobre os chips, scroll suave com centralização) -->
   <div class="quickfilters-outer" role="group" aria-label="Filtros rápidos por tipo">
-    <button class="scroll-arrow arrow-left hidden" id="scroll-arrow-left" aria-label="Rolar filtros para a esquerda" onclick="scrollChips('left')">
-      <span aria-hidden="true">‹</span>
-    </button>
-    <div class="quickfilters-scroll" id="filter-chips" onscroll="updateScrollIndicators()"></div>
-    <button class="scroll-arrow arrow-right" id="scroll-arrow-right" aria-label="Rolar filtros para a direita" onclick="scrollChips('right')">
-      <span aria-hidden="true">›</span>
-    </button>
+    <div class="quickfilters-scroll" id="filter-chips"></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     RESULTS STATUS BAR
-══════════════════════════════════════════ -->
 <div class="results-bar">
   <span class="results-count" id="results-count" aria-live="polite">Exibindo <strong>79</strong> equipamentos</span>
   <button class="btn-reset-filters hidden" id="reset-filters-btn" onclick="clearAllFilters()">
@@ -1678,37 +1625,7 @@ function clearAllFilters() {
   render();
 }
 
-/* ── NAVEGAÇÃO & CENTRALIZAÇÃO DE QUICKFILTERS ──── */
-function updateScrollIndicators() {
-  const wrap = $('filter-chips');
-  const leftBtn = $('scroll-arrow-left');
-  const rightBtn = $('scroll-arrow-right');
-  if (!wrap || !leftBtn || !rightBtn) return;
-
-  const scrollLeft = wrap.scrollLeft;
-  const maxScroll = wrap.scrollWidth - wrap.clientWidth;
-
-  if (scrollLeft > 6) {
-    leftBtn.classList.remove('hidden');
-  } else {
-    leftBtn.classList.add('hidden');
-  }
-
-  if (maxScroll - scrollLeft > 6) {
-    rightBtn.classList.remove('hidden');
-  } else {
-    rightBtn.classList.add('hidden');
-  }
-}
-
-function scrollChips(direction) {
-  const wrap = $('filter-chips');
-  if (!wrap) return;
-  const offset = direction === 'left' ? -220 : 220;
-  wrap.scrollBy({ left: offset, behavior: 'smooth' });
-  setTimeout(updateScrollIndicators, 320);
-}
-
+/* ── CENTRALIZAÇÃO DOS QUICKFILTERS ─────────────────── */
 function centerChip(chip) {
   if (!chip) return;
   const wrap = $('filter-chips');
@@ -1723,8 +1640,218 @@ function centerChip(chip) {
     left: Math.max(0, targetScroll),
     behavior: 'smooth'
   });
+}
 
-  setTimeout(updateScrollIndicators, 350);
+/* ── GEOLOCALIZAÇÃO & HAVERSINE (Perto de Mim) ─────── */
+function haversineDistanceKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Raio da Terra em km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function formatDistance(distKm) {
+  if (distKm === undefined || distKm === null) return '';
+  if (distKm < 1) {
+    return `${Math.round(distKm * 1000)} m`;
+  }
+  return `${distKm.toFixed(1).replace('.', ',')} km`;
+}
+
+function toggleNearMe() {
+  if (userLocation) {
+    disableNearMe();
+  } else {
+    enableNearMe();
+  }
+}
+
+function enableNearMe() {
+  if (!navigator.geolocation) {
+    showToast('Geolocalização não é suportada pelo seu navegador.');
+    return;
+  }
+
+  const btn = $('btn-near-me');
+  const txt = $('near-me-text');
+  btn.classList.add('loading');
+  txt.textContent = 'Obtendo GPS...';
+
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      btn.classList.remove('loading');
+      btn.classList.add('active');
+      txt.textContent = 'Perto de mim';
+
+      userLocation = {
+        lat: position.coords.latitude,
+        lon: position.coords.longitude
+      };
+
+      $('radius-panel').classList.remove('hidden');
+      showToast('Localização obtida! Exibindo unidades próximas.');
+      render();
+    },
+    error => {
+      btn.classList.remove('loading');
+      txt.textContent = 'Perto de mim';
+      let msg = 'Não foi possível obter sua localização.';
+      if (error.code === error.PERMISSION_DENIED) {
+        msg = 'Permissão de localização negada. Ative o GPS para usar.';
+      }
+      showToast(msg);
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 60000
+    }
+  );
+}
+
+function disableNearMe() {
+  userLocation = null;
+  const btn = $('btn-near-me');
+  btn.classList.remove('active', 'loading');
+  $('near-me-text').textContent = 'Perto de mim';
+  $('radius-panel').classList.add('hidden');
+  showToast('Modo perto de mim desativado.');
+  render();
+}
+
+function setRadius(km) {
+  selectedRadius = km;
+  // Atualizar visual dos chips de raio
+  [1, 3, 5, 10, 'all'].forEach(val => {
+    const chip = $(`rchip-${val}`);
+    if (chip) {
+      const isAct = (val === 'all' && km === null) || (val === km);
+      chip.className = `rchip ${isAct ? 'active' : ''}`.trim();
+      chip.setAttribute('aria-checked', isAct);
+    }
+  });
+
+  const label = km ? `${km} km` : 'sem limite';
+  showToast(`Raio configurado para ${label}.`);
+  render();
+}
+
+/* ── FILTRAGEM & DADOS ────────────────────────────── */
+function getFilteredItems() {
+  // 1. Filtrar categorias, tipos e busca textual
+  let items = DATA.filter(item => {
+    if (activeTab !== 'todos' && item.categoria !== activeTab) return false;
+    if (activeFilter && item.tipo !== activeFilter) return false;
+    if (searchQuery) {
+      const haystack = [item.nome, item.tipo, item.endereco, item.id].filter(Boolean).join(' ').toLowerCase();
+      if (!haystack.includes(searchQuery)) return false;
+    }
+    return true;
+  });
+
+  // 2. Se modo Perto de Mim estiver ativo, calcular distâncias e aplicar filtro de raio
+  if (userLocation) {
+    items = items.map(item => {
+      if (item.lat && item.lon) {
+        const dist = haversineDistanceKm(userLocation.lat, userLocation.lon, item.lat, item.lon);
+        return { ...item, distance: dist };
+      }
+      return { ...item, distance: Infinity };
+    });
+
+    // Filtrar por raio máximo se configurado
+    if (selectedRadius !== null) {
+      items = items.filter(item => item.distance <= selectedRadius);
+    }
+
+    // Ordenar pelo mais próximo primeiro
+    items.sort((a, b) => a.distance - b.distance);
+  } else {
+    // Ordenação padrão alfabética
+    items.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
+  }
+
+  return items;
+}
+
+/* ── TROCA DE TAB ─────────────────────────────────── */
+function setTab(tab) {
+  activeTab = tab;
+  activeFilter = null; // Reseta filtro de tipo ao mudar de categoria
+
+  // Atualizar Bottom Nav (mobile)
+  ['all', 'saude', 'edu'].forEach(k => {
+    const map = { all: 'todos', saude: 'saude', edu: 'educacao' };
+    const isAct = map[k] === tab;
+    const btn = $(`nav-${k}`);
+    btn.className = `nav-btn ${isAct ? 'active-' + (k === 'all' ? 'todos' : k) : ''}`.trim();
+    btn.setAttribute('aria-selected', isAct);
+  });
+
+  // Atualizar Desktop Nav
+  ['all', 'saude', 'edu'].forEach(k => {
+    const map = { all: 'todos', saude: 'saude', edu: 'educacao' };
+    const isAct = map[k] === tab;
+    const btn = $(`dtab-${k}`);
+    btn.className = `dtab ${isAct ? 'active-' + (k === 'all' ? 'todos' : k) : ''}`.trim();
+    btn.setAttribute('aria-selected', isAct);
+  });
+
+  // Atualizar Seletor Rápido (Pills)
+  ['all', 'saude', 'edu'].forEach(k => {
+    const map = { all: 'todos', saude: 'saude', edu: 'educacao' };
+    const isAct = map[k] === tab;
+    const pill = $(`cat-pill-${k}`);
+    if (pill) {
+      pill.className = `cat-pill ${isAct ? 'active-' + (k === 'all' ? 'todos' : k) : ''}`.trim();
+      pill.setAttribute('aria-selected', isAct);
+    }
+  });
+
+  buildQuickFilters();
+  render();
+}
+
+/* ── SEARCH ACTIONS ───────────────────────────────── */
+function onSearch() {
+  searchQuery = $('search').value.toLowerCase().trim();
+  render();
+}
+
+function clearSearch() {
+  $('search').value = '';
+  searchQuery = '';
+  render();
+  $('search').focus();
+}
+
+function clearAllFilters() {
+  activeFilter = null;
+  searchQuery = '';
+  $('search').value = '';
+  buildQuickFilters();
+  render();
+}
+
+/* ── CENTRALIZAÇÃO DOS QUICKFILTERS ─────────────────── */
+function centerChip(chip) {
+  if (!chip) return;
+  const wrap = $('filter-chips');
+  if (!wrap) return;
+
+  const chipRect = chip.getBoundingClientRect();
+  const wrapRect = wrap.getBoundingClientRect();
+  const currentScroll = wrap.scrollLeft;
+  const targetScroll = currentScroll + (chipRect.left - wrapRect.left) - (wrapRect.width / 2) + (chipRect.width / 2);
+
+  wrap.scrollTo({
+    left: Math.max(0, targetScroll),
+    behavior: 'smooth'
+  });
 }
 
 /* ── QUICKFILTERS (Com contagem e centralização) ──── */
@@ -1953,8 +2080,7 @@ function render() {
 /* ── INICIALIZAÇÃO ─────────────────────────────────── */
 buildQuickFilters();
 render();
-window.addEventListener('resize', updateScrollIndicators);
-setTimeout(updateScrollIndicators, 100);
+
 </script>
 </body>
 </html>
