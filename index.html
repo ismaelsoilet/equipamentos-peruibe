@@ -265,6 +265,98 @@
     .dtab.active-edu .dtab-badge   { background: var(--edu-accent); color: #fff; }
 
     /* ─────────────────────────────────────────────
+       SELETOR RÁPIDO DE CATEGORIA (Saúde / Educação)
+    ───────────────────────────────────────────── */
+    .category-selector-wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 10px 16px 2px;
+    }
+
+    .category-segmented-bar {
+      display: flex;
+      background: #e2e8f0;
+      padding: 4px;
+      border-radius: var(--radius-full);
+      gap: 4px;
+      position: relative;
+      box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+    }
+
+    .cat-pill {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      background: transparent;
+      min-height: 40px;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .cat-pill:hover:not([class*="active-"]) {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .cat-pill:active {
+      transform: scale(0.97);
+    }
+
+    .cat-pill-icon {
+      font-size: 1.05rem;
+      line-height: 1;
+    }
+
+    .cat-pill-count {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+      background: rgba(15, 23, 42, 0.08);
+      color: var(--text-soft);
+      transition: all 0.2s;
+    }
+
+    .cat-pill.active-todos {
+      background: #0f172a;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
+    }
+    .cat-pill.active-todos .cat-pill-count {
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+    }
+
+    .cat-pill.active-saude {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #ffffff;
+      box-shadow: 0 3px 10px rgba(239, 68, 68, 0.35);
+    }
+    .cat-pill.active-saude .cat-pill-count {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    .cat-pill.active-edu {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.35);
+    }
+    .cat-pill.active-edu .cat-pill-count {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    /* ─────────────────────────────────────────────
        STICKY TOOLBAR (Search & Controls)
     ───────────────────────────────────────────── */
     .sticky-toolbar {
@@ -1008,6 +1100,27 @@
      STICKY TOOLBAR (Search & Quick Filters)
 ══════════════════════════════════════════ -->
 <div class="sticky-toolbar">
+  <!-- Seletor Rápido de Tipo (Saúde / Educação) -->
+  <div class="category-selector-wrap">
+    <div class="category-segmented-bar" role="tablist" aria-label="Seletor rápido de tipo de equipamento">
+      <button class="cat-pill active-todos" id="cat-pill-all" onclick="setTab('todos')" role="tab" aria-selected="true">
+        <span class="cat-pill-icon">📋</span>
+        <span>Todos</span>
+        <span class="cat-pill-count" id="pill-count-all">79</span>
+      </button>
+      <button class="cat-pill" id="cat-pill-saude" onclick="setTab('saude')" role="tab" aria-selected="false">
+        <span class="cat-pill-icon">🏥</span>
+        <span>Saúde</span>
+        <span class="cat-pill-count" id="pill-count-saude">38</span>
+      </button>
+      <button class="cat-pill" id="cat-pill-edu" onclick="setTab('educacao')" role="tab" aria-selected="false">
+        <span class="cat-pill-icon">🏫</span>
+        <span>Educação</span>
+        <span class="cat-pill-count" id="pill-count-edu">41</span>
+      </button>
+    </div>
+  </div>
+
   <div class="search-container" role="search">
     <div class="search-box">
       <span class="search-icon" aria-hidden="true">🔍</span>
@@ -1207,6 +1320,17 @@ function setTab(tab) {
     btn.setAttribute('aria-selected', isAct);
   });
 
+  // Atualizar Seletor Rápido (Pills)
+  ['all', 'saude', 'edu'].forEach(k => {
+    const map = { all: 'todos', saude: 'saude', edu: 'educacao' };
+    const isAct = map[k] === tab;
+    const pill = $(`cat-pill-${k}`);
+    if (pill) {
+      pill.className = `cat-pill ${isAct ? 'active-' + (k === 'all' ? 'todos' : k) : ''}`.trim();
+      pill.setAttribute('aria-selected', isAct);
+    }
+  });
+
   buildQuickFilters();
   render();
 }
@@ -1373,6 +1497,10 @@ function render() {
   $('dc-all').textContent = DATA.length;
   $('dc-saude').textContent = nSaude;
   $('dc-edu').textContent = nEdu;
+
+  if ($('pill-count-all')) $('pill-count-all').textContent = DATA.length;
+  if ($('pill-count-saude')) $('pill-count-saude').textContent = nSaude;
+  if ($('pill-count-edu')) $('pill-count-edu').textContent = nEdu;
 
   // Barra de status de resultados
   const hasActiveFilters = activeFilter !== null || searchQuery !== '';
